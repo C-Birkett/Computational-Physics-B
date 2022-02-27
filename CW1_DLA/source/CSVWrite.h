@@ -11,37 +11,44 @@ class CSVWrite{
 
   public:
     CSVWrite(std::string filename){
-      //printf("\nWriting to CSV: ", filename.c_str());
-      std::ofstream myFile(filename);
-      this->CSVFile = &myFile;
+      std::cout << "Initialising csv" << std::endl;
+      CSVFile = new std::ofstream(filename, std::ios::out);
     }
 
     ~CSVWrite(){
-      this->CSVFile->close();
+      CSVFile->close();
     }
 
     void CSVClose(){
-      this->CSVFile->close();  
+      CSVFile->close();  
     }
 
     //Writes 2d vector data to CSV
-    void WriteVector(std::vector<std::vector<double>>* dataset){
-      for(int i = 0; i < dataset->size(); i++){
-        for(int j = 0; j < dataset->at(i).size(); j++){
+    void WriteVector(std::vector<std::vector<double>> dataset){
+      std::cout << "Writing to csv" << std::endl;
+      for(int i = 0; i < dataset.at(0).size(); ++i){
+        for(int j = 0; j < dataset.size(); ++j){
           //Write data
-          *this->CSVFile << dataset->at(i)[j];
-          if(j != dataset->size() - 1) *this->CSVFile << ","; // No comma at end of line
+          *CSVFile << dataset.at(j).at(i);
+          if(j != dataset.size() - 1) *CSVFile << ","; // No comma at end of line
         }
-      *this->CSVFile << "\n";
+      *CSVFile << std::endl;
       }
     }
 };
 
 void CSVTest(){
-  printf("\nTesting CSV write functionality\n");
+  std::cout << "Testing CSV write functionality" <<std::endl;
+
   //fill 3 x 3 testVector with 1-9 square
-  std::vector<std::vector<double>> testVector = {{1,2,3}, {4,5,6}, {7,8,9}};
-  CSVWrite testCSV(std::string("test_csv.csv"));
-  testCSV.WriteVector(&testVector);
-  //testCSV.CSVClose();
+  std::vector<double> col1(10,1.0);
+  std::vector<double> col2(10,2.0);
+  std::vector<double> col3(10,3.0);
+  std::vector<std::vector<double>> testVector = {col1, col2, col3};
+
+  auto testCSV = new CSVWrite(std::string("test_csv.csv"));
+  testCSV->WriteVector(testVector);
+  
+  std::cout << "Test completed successfully" <<std::endl;
 }
+
