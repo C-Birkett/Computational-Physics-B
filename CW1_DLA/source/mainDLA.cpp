@@ -8,6 +8,8 @@
 #include "DLASystem.h"
 #include "Window.h" 
 
+#include "CSVWrite.h"
+
 using namespace std;
 
 // functions which are needed for openGL go into a namespace so that we can identify them
@@ -22,6 +24,9 @@ namespace drawFuncs {
 DLASystem *sys;
 
 int main(int argc, char **argv) {
+
+  CSVTest();
+
   // turn on glut
 	glutInit(&argc, argv);
 
