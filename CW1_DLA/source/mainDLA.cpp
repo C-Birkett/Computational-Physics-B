@@ -8,7 +8,8 @@
 #include "DLASystem.h"
 #include "Window.h" 
 
-#include "CSVWrite.h"
+//TODO Fix CSVWrite includes!!!
+//#include "CSVWrite.h"
 
 using namespace std;
 
@@ -23,9 +24,15 @@ namespace drawFuncs {
 // this is a global pointer, which is how we access the system itself
 DLASystem *sys;
 
+//REDUNDANT
+//declare data recording function
+//void DLAData(DLASystem* system, int nInterval, pair<int, int> nRange);
+
 int main(int argc, char **argv) {
 
-  CSVTest();
+  //Breaks includes for some reason
+  //Test CSV writing system
+  //CSVTest();
 
   // turn on glut
 	glutInit(&argc, argv);
@@ -36,8 +43,19 @@ int main(int argc, char **argv) {
   // create a window
   Window *win = new Window(window_size,window_title);
 
+  // set conditions for simulation
+
+  //data recording range sets size of sim
+  pair<int, int> range = {0,10000};
+
   // create the system
-  sys = new DLASystem(win);
+  sys = new DLASystem(win, range.second);
+
+  // data recording
+  sys->recordData(500, range);
+
+  //set background to white by default
+  sys->setWinBackgroundWhite();
   
   // this is the seed for the random numbers
   int seed = 6;
@@ -127,6 +145,23 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     cout << "upd" << endl;
     sys->Update();
     break;
+  //print number of particles and radius
+  case '0':
+    cout << "number of particles and radius:" << endl;
+    cout << sys->getNumParticles() << ", " << sys->getClusterRadius() << endl;
+    cout << "simple fractal dimension with a = 1: " << endl;
+    cout << sys->simpleFracDim() << endl;
+    break;
+  //start recording data
+  case 'm':{
+    cout << "recording data to csv" << endl;
+    pair<int, int> range = {0,1000};
+    sys->recordData(0, range);
+    break;}
+  case 'v':
+    double vwsze;
+    cin >> vwsze;
+    sys->setViewSize(vwsze);
 	}
   // tell openGL to redraw the window
 	glutPostRedisplay();
@@ -171,4 +206,3 @@ void drawFuncs::display() {
       //  Swap contents of backward and forward frame buffers
       glutSwapBuffers();
 }
-

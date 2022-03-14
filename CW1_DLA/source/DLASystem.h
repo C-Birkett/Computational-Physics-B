@@ -15,8 +15,9 @@
 #include "Particle.h"
 #include "rnd.h"
 
-using namespace std;
+#include "CSVWrite.h"
 
+using namespace std;
 
 class DLASystem {
   private:
@@ -59,7 +60,10 @@ class DLASystem {
     double addRatio;    // how much bigger the addCircle should be, compared to cluster radius
     double killRatio;   // how much bigger is the killCircle, compared to the addCircle
 
-  
+    //range & interval of numParticles to record in
+    pair<int, int> nRange;
+    int nInterval;
+
   public:
   // these are public variables and functions
 
@@ -80,7 +84,7 @@ class DLASystem {
     int lastParticleIsActive;
   
     // constructor
-    DLASystem(Window *set_win);
+    DLASystem(Window *set_win, int totalParticles);
     // destructor
     ~DLASystem();
   
@@ -151,4 +155,30 @@ class DLASystem {
     // but we are being a bit lazy here
     void setWinBackgroundWhite() { glClearColor(1.0, 1.0, 1.0, 1.0); }
     void setWinBackgroundBlack() { glClearColor(0.0, 0.0, 0.0, 0.0); }
+
+    //Code Written by CB from here
+    
+    int getNumParticles() {return numParticles;}
+    double getClusterRadius () {return clusterRadius;}
+
+    //simple fractal dimension for a = 1
+    double simpleFracDim () {return log(numParticles)/log(clusterRadius);}
+
+    //may not need
+    vector<double>* getNumData();
+    vector<double>* getRadiusData();
+
+    //vector of number of particles for data analysis
+    vector<double>* numData;
+    vector<double>* radiusData;
+
+    //keep track of data recording status
+    bool recording;
+    bool recordComplete;
+
+    //record data from DLA simulation
+    void recordData(int nInterval, pair<int, int> nRange);
+    void updateRecording();
+    void writeDataCSV();
+
 };

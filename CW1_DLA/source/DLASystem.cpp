@@ -21,9 +21,11 @@ void DLASystem::Update() {
 	if (lastParticleIsActive == 1)
 		moveLastParticle();
 	else if (numParticles < endNum) {
+    if(recording) updateRecording();
 		addParticleOnAddCircle();
 		setParticleActive();
 	}
+  else if(numParticles == endNum) {if(recording) updateRecording();}
 	if (lastParticleIsActive == 0 || slowNotFast == 1)
 		glutPostRedisplay(); //Tell GLUT that the display has changed
 }
@@ -89,6 +91,7 @@ int DLASystem::checkStop() {
 		pauseRunning();
 		cout << "STOP" << endl;
 		glutPostRedisplay(); // update display
+    if(recording) updateRecording();  //update recording one more time to finish
 		return 1;
 	}
 	else return 0;
@@ -241,11 +244,11 @@ int DLASystem::checkStick() {
 
 
 // constructor
-DLASystem::DLASystem(Window *set_win) {
+DLASystem::DLASystem(Window *set_win, int totalParticles) {
 	cout << "creating system, gridSize " << gridSize << endl;
 	win = set_win;
 	numParticles = 0;
-	endNum = 1000;
+	endNum = totalParticles;
 
 	// allocate memory for the grid, remember to free the memory in destructor
 	grid = new int*[gridSize];
@@ -277,8 +280,6 @@ DLASystem::~DLASystem() {
 	if (logfile.is_open())
 		logfile.close();
 }
-
-
 
 // this draws the system
 void DLASystem::DrawSquares() {
@@ -315,5 +316,57 @@ void DLASystem::DrawSquares() {
 		pauseStr << "paused";
 		win->displayString(pauseStr, -0.9, -0.9, colours::red);
 	}
+}
 
+void DLASystem::recordData(int nInterval_, pair<int, int> nRange_) {
+  if(running != 0 && !recording){cout << "please pause simulation before recording data" << endl;}
+  else{
+    cout << "Starting DLA recording" << endl;
+    recording = true;
+    recordComplete = false;
+
+    //init arrays to store data
+    numData = new vector<double>;
+    radiusData = new vector<double>;
+    
+    nInterval = nInterval_;
+    nRange = nRange_;
+    
+    //setRunning();
+  }
+}
+
+void DLASystem::updateRecording() {
+  if(numParticles == nRange.second){
+    cout << "recording data at N = " << numParticles << endl;
+    numData->push_back(static_cast<double>(numParticles));
+    radiusData->push_back(clusterRadius);
+
+    cout << "Sucessfully recorded data in range (" << nRange.first << ", " << nRange.second << ") with interval " << nInterval << endl;
+    recording = false;
+    recordComplete = true;
+    pauseRunning();
+    writeDataCSV();
+    //should break here anyways?
+    //break;
+  }
+  else if(numParticles > nRange.first
+          && numParticles % nInterval == 0
+          && numParticles > numData->size() * nInterval + nRange.first){
+    cout << "recording data at N = " << numParticles << endl;
+    numData->push_back(static_cast<double>(numParticles));
+    radiusData->push_back(clusterRadius);
+  }
+}
+
+void DLASystem::writeDataCSV(){
+  auto dataSet = new vector<vector<double>>{{*numData}, {*radiusData}};
+
+  auto csv = new CSVWrite("../data.csv");
+
+  csv->WriteVector(dataSet);
+
+  //reset recording system
+  recordComplete = false;
+  recording = false; //should be false anyways
 }
