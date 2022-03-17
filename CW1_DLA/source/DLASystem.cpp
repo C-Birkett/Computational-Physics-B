@@ -20,12 +20,12 @@ namespace colours {
 void DLASystem::Update() {
 	if (lastParticleIsActive == 1)
 		moveLastParticle();
-	else if (numParticles < endNum) {
+	else if (numParticles < nRange.second) {
     if(recording) updateRecording();
 		addParticleOnAddCircle();
 		setParticleActive();
 	}
-  else if(numParticles == endNum) {if(recording) updateRecording();}
+	else if (numParticles == nRange.second) {if(recording) updateRecording();}
 	if (lastParticleIsActive == 0 || slowNotFast == 1)
 		glutPostRedisplay(); //Tell GLUT that the display has changed
 }
@@ -68,6 +68,10 @@ void DLASystem::Reset() {
 	int InitialViewSize = 40;
 	setViewSize(InitialViewSize);
 
+  //clear temp data arrays
+  //dataSet cleared separately as needs to persist between sims
+  numData->clear();
+  radiusData->clear();
 }
 
 // set the value of a grid cell for a particular position
@@ -91,7 +95,8 @@ int DLASystem::checkStop() {
 		pauseRunning();
 		cout << "STOP" << endl;
 		glutPostRedisplay(); // update display
-    if(recording) updateRecording();  //update recording one more time to finish
+    //if(recording) writeDataCSV();  //write data up to this point
+    //use m key for this
 		return 1;
 	}
 	else return 0;
@@ -244,11 +249,10 @@ int DLASystem::checkStick() {
 
 
 // constructor
-DLASystem::DLASystem(Window *set_win, int totalParticles) {
+DLASystem::DLASystem(Window *set_win) {
 	cout << "creating system, gridSize " << gridSize << endl;
 	win = set_win;
 	numParticles = 0;
-	endNum = totalParticles;
 
 	// allocate memory for the grid, remember to free the memory in destructor
 	grid = new int*[gridSize];
@@ -256,6 +260,13 @@ DLASystem::DLASystem(Window *set_win, int totalParticles) {
 		grid[i] = new int[gridSize];
 	}
 	slowNotFast = 1;
+
+  //init arrays to store data
+  numData = new vector<double>;
+  radiusData = new vector<double>;
+
+  dataSet = new vector<vector<double>>;
+
 	// reset initial parameters
 	Reset();
 
@@ -318,55 +329,67 @@ void DLASystem::DrawSquares() {
 	}
 }
 
-void DLASystem::recordData(int nInterval_, pair<int, int> nRange_) {
+void DLASystem::recordData(int numOfSims, int nInterval_, pair<int, int> nRange_) {
   if(running != 0 && !recording){cout << "please pause simulation before recording data" << endl;}
-  else{
-    cout << "Starting DLA recording" << endl;
-    recording = true;
-    recordComplete = false;
-
-    //init arrays to store data
-    numData = new vector<double>;
-    radiusData = new vector<double>;
+  else{ 
+    if (numOfSims >= 2){
+      cout << "Starting DLA multiple recording" << endl;
+      simNum = numOfSims;
+      numSims = numOfSims;
+    }else cout << "Starting DLA recording" << endl;
     
+    recording = true;
+
     nInterval = nInterval_;
     nRange = nRange_;
-    
-    //setRunning();
   }
 }
 
+//record data on update
 void DLASystem::updateRecording() {
   if(numParticles == nRange.second){
-    cout << "recording data at N = " << numParticles << endl;
+    //cout << "recording data at N = " << numParticles << endl;
     numData->push_back(static_cast<double>(numParticles));
     radiusData->push_back(clusterRadius);
 
-    cout << "Sucessfully recorded data in range (" << nRange.first << ", " << nRange.second << ") with interval " << nInterval << endl;
-    recording = false;
-    recordComplete = true;
-    pauseRunning();
-    writeDataCSV();
-    //should break here anyways?
-    //break;
+    if (simNum == numSims) {dataSet->push_back(*numData);} //only need one column of this
+
+    //when finished in range write data to dataSet & reset sim
+    if (simNum >= 1){
+      dataSet->push_back(*radiusData);
+      cout << "Sucessfully recorded sim number " << simNum << " data in range (" << nRange.first << ", " << nRange.second << ") with interval " << nInterval << endl;
+
+      //reset initial conditions
+      Reset(); //will reset numData and radiusData
+      setRandomSeed();
+      setFast();
+      setRunning();
+
+      if (simNum == 1) {writeDataCSV();}
+
+      simNum--;
+      //cout << "conditions reset for simulation number " << simNum << endl;
+    }
+
+    if (simNum <= 0) {recording = false; pauseRunning();}
   }
   else if(numParticles > nRange.first
           && numParticles % nInterval == 0
           && numParticles > numData->size() * nInterval + nRange.first){
-    cout << "recording data at N = " << numParticles << endl;
-    numData->push_back(static_cast<double>(numParticles));
+    //cout << "recording data at N = " << numParticles << endl;
+    numData->push_back(static_cast<double>(numParticles)); //dont really need to do this...
     radiusData->push_back(clusterRadius);
   }
 }
 
+//write recorded data to a CSV file
 void DLASystem::writeDataCSV(){
-  auto dataSet = new vector<vector<double>>{{*numData}, {*radiusData}};
-
-  auto csv = new CSVWrite("../data.csv");
+  auto csv = new CSVWrite("./data.csv");
 
   csv->WriteVector(dataSet);
+  csv->CSVClose();
 
-  //reset recording system
-  recordComplete = false;
+  //clearDataSet();
+
   recording = false; //should be false anyways
 }

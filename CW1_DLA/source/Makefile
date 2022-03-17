@@ -24,9 +24,9 @@ LFLAGS = -L/usr/local/lib -lm -lGL -lGLU -lglut
 # 4 - Sources names
 # 5 - Dependencies names
 # ------------------------------------------
-BIN = .
+BIN = ..
 SOURCE = .
-EXEC = ./run
+EXEC = ../run
 SOURCES = $(wildcard $(SOURCE)/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 

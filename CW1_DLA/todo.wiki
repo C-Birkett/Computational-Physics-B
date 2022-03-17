@@ -1,0 +1,63 @@
+= DLA Coursework TODO =
+
+== Simulation ==
+
+- [.] Simulation & Data analysis
+
+  - [.] Exercise 1
+    - [X] finish 100k particles sim
+    - [ ] get simulations using different seeds
+    - [ ] data analysis
+      - [ ] figure out how to properly measure fractal dimension from data
+      - [ ] need to be able to estimate error in fractal dimension
+        - [ ] find mean and std deviation or variation from multiple DLA simulations (100x, 1000x?)
+      - [ ] think about numerical limitations of the simulation & its impact on fractal dim
+
+  - [ ] Exercise 2
+    - [ ] write checkstick funciton
+      - [ ] random stick
+        - [ ] different probabilities
+      - [ ] average velocity? before contact?
+      - [ ] think about what happens if the particle doesnt stick
+        - [ ] maximum stick attempts?
+        - [ ] maximum # of updates before trying new particle?
+      - [ ] repeat analysis & compare with ex 1
+        - [ ] does it effect fractal dimension?
+        - [ ] my guess: no(?) as location of new particle sticking is still random as before
+
+  - [ ] data analysis
+    - [ ] consider alternate ways of presenting data
+      - [ ] radial density of particles?
+        - [ ] would this effect random stick due to weight in some given radius
+        - [ ] more particles nearby => more likely to stick?
+      - [ ] density at radius
+        - [ ] what does the density look like at radius
+        - [ ] largest strands will continue to grow larger?
+    - [ ] compare with literature
+      - [ ] result of fractal dimension -> should be 1.71 according to somewhere, so far mine is ~1.72 for large numbers
+      - [ ] get sources
+      - [ ] look at actual physical experiments
+      - [ ] look at other DLA simulations
+      - [ ] look at what metrics they consider
+
+== Report ==
+
+- [ ] General
+
+- [ ] Sections
+
+  - [ ] Abstract
+
+  - [ ] Introduction
+
+  - [ ] Theory / simulation
+
+  - [ ] Results
+    - [ ] always sticks
+    - [ ] random sticking
+
+  - [ ] Discussion / Conclusion
+
+  - [ ] References
+
+  - [ ] Appendix

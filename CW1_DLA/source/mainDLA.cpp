@@ -4,12 +4,10 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <unistd.h>
 
 #include "DLASystem.h"
 #include "Window.h" 
-
-//TODO Fix CSVWrite includes!!!
-//#include "CSVWrite.h"
 
 using namespace std;
 
@@ -21,12 +19,11 @@ namespace drawFuncs {
   void introMessage();
 }
 
+//forward declaration
+void multipleSimulation (DLASystem* sys, int numSims, pair<int,int> range, int interval);
+
 // this is a global pointer, which is how we access the system itself
 DLASystem *sys;
-
-//REDUNDANT
-//declare data recording function
-//void DLAData(DLASystem* system, int nInterval, pair<int, int> nRange);
 
 int main(int argc, char **argv) {
 
@@ -45,23 +42,22 @@ int main(int argc, char **argv) {
 
   // set conditions for simulation
 
-  //data recording range sets size of sim
-  pair<int, int> range = {0,10000};
-
   // create the system
-  sys = new DLASystem(win, range.second);
-
-  // data recording
-  sys->recordData(500, range);
+  sys = new DLASystem(win);
 
   //set background to white by default
   sys->setWinBackgroundWhite();
   
   // this is the seed for the random numbers
-  int seed = 6;
-  cout << "setting seed " << seed << endl;
-  sys->setSeed(seed);
   
+  //int seed = 6;
+  //cout << "setting seed " << seed << endl;
+  //sys->setSeed(seed);
+  
+  //use true random number as seed
+  cout << "setting random seed" << endl;
+  sys->setRandomSeed();
+
   // print the "help" message to the console
   drawFuncs::introMessage();
   
@@ -92,6 +88,10 @@ void drawFuncs::introMessage() {
         cout << "  r to clear everything (reset)" << endl;
         cout << "  z to pause and zoom in" << endl;
         cout << "  w or b to change background colour to white or black" << endl;
+        cout << "  0 to print number of particles and radius" << endl;
+        cout << "  m to save current recorded data to './data.csv' " << endl;
+        cout << "  v to change view zoom level" << endl;
+        cout << "  t to setup data recording" << endl;
 }
 
 // openGL function deals with the keyboard
@@ -130,7 +130,8 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     break;
   case 'f':
     cout << "fast" << endl;
-    sys->setFast();
+    if(sys->slowNotFast <= 0) sys->setSuperFast();
+    else sys->setFast();
     break;
   case 'r':
     cout << "reset" << endl;
@@ -152,17 +153,62 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     cout << "simple fractal dimension with a = 1: " << endl;
     cout << sys->simpleFracDim() << endl;
     break;
-  //start recording data
+  //end recording data (use when STOP)
   case 'm':{
-    cout << "recording data to csv" << endl;
-    pair<int, int> range = {0,1000};
-    sys->recordData(0, range);
+    cout << "writing current data to csv & ending recording" << endl;
+    sys->writeDataCSV();
     break;}
   case 'v':
+    cout << "input viewsize: ";
     double vwsze;
     cin >> vwsze;
-    sys->setViewSize(vwsze);
-	}
+    //tried to do a zoom-in but it doesnt work
+    if(vwsze == 0){
+      for (int i = static_cast<int>(sys->getViewSize()); i >= 40; i -= 10){
+        usleep(100000);
+        sys->setViewSize(i);
+	      glutPostRedisplay();
+      }
+    }
+    else sys->setViewSize(vwsze);
+  //perform multiple simulations
+  case 't':
+    cout << "Set up recording parameters:" << endl;
+
+    cout << "input lower bound for number of particles (leave blank for 0): ";
+    int r_low;
+    cin >> r_low;
+    cout << "lower bound set as: "<< r_low << endl;
+
+    cout << "input upper bound for number of particles: ";
+    int r_high;
+    cin >> r_high;
+    cout << "upper bound set as: "<< r_high << endl;
+
+    pair<int, int> range = {r_low, r_high};
+
+    cout << "input interval for number of particles: ";
+    int intrvl;
+    cin >> intrvl;
+    cout << "interval set as: "<< intrvl << endl;
+
+    cout << "input number of simulations to perform: ";
+    int nSims;
+    cin >> nSims;
+    cout << "input number of simulations to perform: "<< intrvl << endl;
+
+    // setup data recording
+    sys->recordData(nSims, intrvl, range);
+
+    cout << "input any int to start" << endl;
+    int tmp;
+    cin >> tmp;
+
+    sys->setFast();
+    sys->setRunning();
+    glutTimerFunc(0, drawFuncs::update, 0);
+    break;
+  }
   // tell openGL to redraw the window
 	glutPostRedisplay();
 }

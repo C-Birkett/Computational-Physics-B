@@ -39,7 +39,9 @@ class DLASystem {
     double killCircle;
   
     // size of grid
-    static const int gridSize = 1600;
+    // size effects memory allocated!
+    //static const int gridSize = 1600;
+    static const int gridSize = 3200;
     int **grid;  // this will be a 2d array that stores whether each site is occupied
   
     // the window draws only part of the grid, viewSize controls how much...
@@ -52,16 +54,12 @@ class DLASystem {
     // output file (not used at the moment)
     ofstream logfile;
   
-    // number of particles at which the simulation will stop
-    // (the value is set in constructor)
-    int endNum;
-  
     // the values of these variables are set in the constructor
     double addRatio;    // how much bigger the addCircle should be, compared to cluster radius
     double killRatio;   // how much bigger is the killCircle, compared to the addCircle
 
     //range & interval of numParticles to record in
-    pair<int, int> nRange;
+    pair<int, int> nRange = {0, 10000}; //by default nRange.second is the max number of particles
     int nInterval;
 
   public:
@@ -84,7 +82,7 @@ class DLASystem {
     int lastParticleIsActive;
   
     // constructor
-    DLASystem(Window *set_win, int totalParticles);
+    DLASystem(Window *set_win);
     // destructor
     ~DLASystem();
   
@@ -158,15 +156,13 @@ class DLASystem {
 
     //Code Written by CB from here
     
+    void setRandomSeed() {rgen.setSeed(rgen.trueRand());}
+    
     int getNumParticles() {return numParticles;}
     double getClusterRadius () {return clusterRadius;}
 
     //simple fractal dimension for a = 1
     double simpleFracDim () {return log(numParticles)/log(clusterRadius);}
-
-    //may not need
-    vector<double>* getNumData();
-    vector<double>* getRadiusData();
 
     //vector of number of particles for data analysis
     vector<double>* numData;
@@ -174,11 +170,23 @@ class DLASystem {
 
     //keep track of data recording status
     bool recording;
-    bool recordComplete;
+
+    //for recording multiple simulations keep track of simulation number
+    //1 = default only do one sim
+    int simNum = 1;
+
+    //total number of simulations to do
+    int numSims = 1;
+
+    //store results of sim (inc multiple)
+    vector<vector<double>>* dataSet;
 
     //record data from DLA simulation
-    void recordData(int nInterval, pair<int, int> nRange);
+    void recordData(int numOfSims, int nInterval, pair<int, int> nRange);
     void updateRecording();
     void writeDataCSV();
 
+    void clearDataSet() {dataSet->clear();}
+
+    double getViewSize() {return viewSize;}
 };

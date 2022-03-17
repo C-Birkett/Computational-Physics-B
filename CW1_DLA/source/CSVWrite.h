@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-//TODO Fix includes!
-
 //could do proper OOP but this class is relatively small
 class CSVWrite{
   private:
@@ -19,8 +17,8 @@ class CSVWrite{
     }
 
     ~CSVWrite(){
-      CSVFile->close();
-      std::cout << "Successfully wrote to CSV" << std::endl;
+      //CSVFile->close();
+      std::cout << "CSV deconstructor accessed" << std::endl;
     }
 
     void CSVClose(){
@@ -61,6 +59,7 @@ void CSVTest(){
 
   auto testCSV = new CSVWrite(std::string("test_csv.csv"));
   testCSV->WriteVector(&testVector);
+  testCSV->CSVClose();
   
   std::cout << "Test completed successfully" <<std::endl;
 }
