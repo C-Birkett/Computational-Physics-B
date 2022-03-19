@@ -2,11 +2,13 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import math
 
 # import data from simulation
-data = pd.read_csv('data.csv',
+data = pd.read_csv('data_100x20k.csv',
         header = None,
         #names = ('Nc', 'R'),
         )
@@ -18,7 +20,7 @@ Nc = np.array(data.iloc[:, 0])
 R = data.iloc[:, 1:(numSims+1)]
 
 R_mean = np.array(R.mean(axis=1))
-R_err = np.array(R.sem(axis=1))
+R_err = np.array(R.std(axis=1))
 
 # simple model:
 # Nc = (R/a)^df

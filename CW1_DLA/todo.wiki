@@ -43,20 +43,59 @@
 == Report ==
 
 - [ ] General
+  - [ ] Tell a story
 
 - [ ] Sections
 
   - [ ] Abstract
+    - [ ] In general do the following: ~250 words
+    - [ ] background intro
+      - [ ] general - what is a fractal / DLA
+      - [ ] specific - brownian trees etc
+
+    - [ ] question of the report
+      - [ ] what is the fractal dimension?
+      - [ ] why is it important
+
+    - [ ] main result
+      - [ ] main result number
+      - [ ] detail and relevance to problem
+
+    - [ ] general context again
+      - [ ] what does the result mean in a general context
+      - [ ] very general perspective maybe
 
   - [ ] Introduction
+    - [ ] background - physical systems
+    - [ ] background brownian motion / random walk
+    - [ ] background maths / stochastics
+    - [ ] Examples of physical systems (metals)
+      - [ ] their results -> fractal dimension
+    - [ ] significance of fractal dimension
+    - [ ] other publishings on this problem specifically (?)
 
   - [ ] Theory / simulation
+    - [ ] theory / method
+    - [ ] what is fractal dimension / how to derive
+      - [ ] equation informs plots later
+    - [ ] our algorithm
+    - [ ] implementation - c++ run on linux etc
+    - [ ] methods etc
+    - [ ] random number sampling
+    - [ ] grid size, random walk
+    - [ ] kill circle etc
 
   - [ ] Results
     - [ ] always sticks
+      - [ ] one simulation, large n
+      - [ ] datasets
+      - [ ] measurements of fractal dim with uncertainty
+        - [ ] what is uncertainty and why/how is it determined
     - [ ] random sticking
+      - [ ] quick theory on updated algorithm
 
   - [ ] Discussion / Conclusion
+    - [ ] other models - e.g ballistic aggregation
 
   - [ ] References
 

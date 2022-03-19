@@ -69,7 +69,7 @@
 
 %%% The "real" document content comes below...
 
-\title{\textbf{Poincar\'e section analysis of chaotic rotation in the orbit of Hyperion}}
+\title{\textbf{Title}}
 \author{Candidate Number: 24669}
 \affil{Department of Physics, University of Bath, Bath BA2 7AY, United Kingdom}
 %\date{} % Activate to display a given date or no date (if empty),
@@ -80,9 +80,7 @@
  \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-  The 7th moon of Saturn, Hyperion is well known for its ashperical shape and resulting chaotic rotation. This report presents a model of the orbit of Hyperion in two dimensions that considers its asphericity and orientation, which predicts chaotic behaviour in rotation and angular frequency over several orbits. A computational method of generating datasets from the equations of motion is developed for use in a Poincar\'e section of the phase space of the rotational states of Hyperion. Analysis of the Poincar\'e section reveals a 'chaotic sea' of rotational states bounded by unstable periodic sets of states. Further examination reveals 'islands' corresponding to unstable quasi-periodic patterns within the chaotic region.
-
-  A brief comparison with aspherical Martian moons Phobos and Deimos are made using the same model which reveals... 
+  Diffusion limited aggregation (DLA) clusters are branching fractal objects which arise from the adhesion of random-walking particles. A fractal is an object with fractal dimension, that is its uniform mass density grows to a non-integer power of its linear size. This report examines the fractal dimension of a DLA cluster generated from an initial 'seed' particle (Eden model) and the effects of a random chance of particle adherence on the dimension of the brownian tree. DLA simulations are common in modeling of physical and biological processes such as in coagulated metal aeorosols and the growth of plants. We have determined the fractal dimension of an eden model brownian tree to be 1.72. this allows for better estimates of the density of x objects in y processes.
 
 \bigskip
 \end{abstract}
@@ -91,15 +89,15 @@
 \medskip
 
 \section*{Introduction}
-Hyperion, first discovered in 1848 by William Lassell\cite{NASA_Hyperion}, is one of the largest aspherically shaped bodies in the solar system (dimensions $410\times260\times220$ km)\cite{NASA_Hyperion}, and the only regular planetary satellite in the solar system known to not be tidally locked \cite{NASA_Hyperion}. Its orbit is also highly eccentric with eccentricity $e = 0.232$ and semi major axis $a = 1.501\times10^9$ m \cite{NASA_Hyperion}. There are other possible orbital modes that are tidally locked but rotate in a nonsynchronous fashion; for example Mercury is tidally locked with a 3:2 spin orbit resonance \cite{Giuseppe_1966}, that is, for every two revolutions about the sun, it revolves on its axis exactly three times.
+  Diffusion limited aggregation (DLA) systems have been used to model a variety of physical processes, including...
 
-Such resonant states are predicted to contribute to the motion of hyperion, J. Wisdom \textit{et al} (1983) modelled the spin of hyperion as a Hamiltonian system, which consequently predicts the existence of a large chaotic zone in the phase space due to perturbation effect of nonsynchronous quasi-periodic unstable rotational states (described as resonant or $p$ states) on each other \cite{Wisdom_1984}. This was later shown to fit observational data by J. Klavetter in 1989 \cite{Klavetter_1989} \cite{Binzel_1986}. Since these findings many have studied the chaotic motion of Hyperion inlcuding P. Boyd \textit{et al}, who developed a 'method of close returns' for analysing the chaotic motion relative to unstable periodic orbits in the chaotic regions of phase space \cite{Boyd_1994}, where states are attracted to and repelled by these orbits.
+  DLA models produce brownian trees by adhering random-walking (brownian motion) particles to one another from some initial conditions. A common initial condition and the one that we examine in this report is a single initial particle (Eden model) from which the diffuse particles attach after random walking to the structure from a starting radius.
 
 In our model of the orbit of Hyperion, we employ a two dimensional description of orbit derived from Newtonian mechanics\cite{Newtonian_orbit}, and a correction to include angle of orientation and corresponding angular frequency $(\theta(t), \omega(t))$. This results in a set of six coupled ODEs with corresponding initial conditions, in particular, we will examine the effects of taking different initial conditions of rotational state $(\theta(0),\omega(0))$ on the rotation over many orbits by solving the initial value problem numerically by Runge-Kutta-Fehlberg 45 (rkf45) approximation which is accurate to 5th order. To examine the results a Poincar\'e section of $\omega / \omega_H$ against $\theta$ is taken, where $\omega_H$ is the angular frequency of the orbit of Hyperion about Saturn.
 
-\section*{The model}
+\section*{DLA algorithm and simulation}
 
-\subsection*{Classical orbit}
+\subsection*{Brownian trees}
 
 The model for position and velocity of Hyperions orbit follows directly from Newtonian mechanics, we limit the motion to the x-y plane. The position ($x_H, y_H$) and velocity ($vx_H, vy_H$) of Hyperion are described by the four coupled ODEs
 
