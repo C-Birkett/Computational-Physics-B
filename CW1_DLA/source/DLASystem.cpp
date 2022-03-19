@@ -225,10 +225,21 @@ void DLASystem::moveLastParticle() {
 	else {
 		// if we get to here then we are trying to move to an occupied site
 		// (this should never happen as long as the sticking probability is 1.0)
-		cout << "reject " << rr << endl;
-		cout << lastP->pos[0] << " " << lastP->pos[1] << endl;
+		//cout << "reject " << rr << endl;
+		//cout << lastP->pos[0] << " " << lastP->pos[1] << endl;
 		//cout << newpos[0] << " " << newpos[1] << " " << (int)newpos[0] << endl;
 		//printOccupied();
+    
+    //don't update position, checkstick and if false wait for next update
+    //cout << "trying to move into adjacent particle - chcking stick" << endl;
+    if(checkStick()){
+			setParticleInactive();  // make the particle inactive (stuck)
+			updateClusterRadius(lastP->pos);  // update the cluster radius, addCircle, etc.
+
+			if (numParticles % 100 == 0 && logfile.is_open()) {
+				logfile << numParticles << " " << clusterRadius << endl;
+			}
+    }
 	}
 }
 
@@ -242,7 +253,12 @@ int DLASystem::checkStick() {
 		setPosNeighbour(checkpos, lastP->pos, i);
 		// if the neighbour is occupied...
 		if (readGrid(checkpos) == 1)
-			result = 1;
+      if(randomStick){
+	      double rr = static_cast<double>(rgen.randomInt(1000));
+        if (static_cast<double>(rr/1000.0) < stickChance){result = 1;}
+        else {result = 0;}
+      }
+      else {result = 1;}
 	}
 	return result;
 }
@@ -363,6 +379,20 @@ void DLASystem::updateRecording() {
       Reset(); //will reset numData and radiusData
       setRandomSeed();
       setFast();
+
+      if (simStickNum != 0 && simNum % simStickNum == 1 && simNum != numSims){
+        if (stickDiff != 0){
+          stickChance -= stickDiff;
+          if(stickChance<=0){
+            cout << "sticking chance is now 0, finishing recording" << endl;
+            writeDataCSV();
+            recording = false;
+            pauseRunning();
+          }
+          else cout << "new sticking chance set to " << stickChance << endl;
+        }
+      }
+
       setRunning();
 
       if (simNum == 1) {writeDataCSV();}

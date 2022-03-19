@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import math
 
 # import data from simulation
-data = pd.read_csv('data_100x20k.csv',
+data = pd.read_csv('data_20x50k.csv',
         header = None,
         #names = ('Nc', 'R'),
         )

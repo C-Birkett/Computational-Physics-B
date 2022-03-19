@@ -92,6 +92,7 @@ void drawFuncs::introMessage() {
         cout << "  m to save current recorded data to './data.csv' " << endl;
         cout << "  v to change view zoom level" << endl;
         cout << "  t to setup data recording" << endl;
+        cout << "  j to set sticking chance" << endl;
 }
 
 // openGL function deals with the keyboard
@@ -171,11 +172,28 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
       }
     }
     else sys->setViewSize(vwsze);
+
+  //set sticking chance
+  case 'j':{
+    cout << "input probability of particle sticking on contact" << endl;
+
+    double prob;
+    cin >> prob;
+    if(prob >= 1){
+      sys->randomStick = false;
+      sys->stickChance = 1.0;
+    }else{
+      sys->randomStick = true;
+      sys->stickChance = prob;
+    }
+    cout << "sticking probability set to " << sys->stickChance << endl;
+    break;
+  }
   //perform multiple simulations
-  case 't':
+  case 't':{
     cout << "Set up recording parameters:" << endl;
 
-    cout << "input lower bound for number of particles (leave blank for 0): ";
+    cout << "input lower bound for number of particles: ";
     int r_low;
     cin >> r_low;
     cout << "lower bound set as: "<< r_low << endl;
@@ -187,7 +205,7 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 
     pair<int, int> range = {r_low, r_high};
 
-    cout << "input interval for number of particles: ";
+    cout << "input recording interval for number of particles: ";
     int intrvl;
     cin >> intrvl;
     cout << "interval set as: "<< intrvl << endl;
@@ -195,7 +213,40 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     cout << "input number of simulations to perform: ";
     int nSims;
     cin >> nSims;
-    cout << "input number of simulations to perform: "<< intrvl << endl;
+    cout << "number of simulations to perform set as: "<< nSims << endl;
+
+    cout << "input initial probability of particle sticking on contact" << endl;
+    double prob;
+    cin >> prob;
+    if(prob >= 1){
+      sys->randomStick = false;
+      sys->stickChance = 1.0;
+    }else{
+      sys->randomStick = true;
+      sys->stickChance = prob;
+    }
+    cout << "initial sticking probability set to " << sys->stickChance << endl;
+
+    cout << "input amount to change probability of particle sticking on contact per simulation" << endl;
+    double prob_diff;
+    cin >> prob_diff;
+    if(prob_diff >= 1 || prob_diff <=0){
+      sys->stickDiff = 0;
+    }else{
+      sys->randomStick = true;
+      sys->stickDiff = prob_diff;
+    }
+    cout << "sticking probability interval set to " << sys->stickDiff << endl;
+
+    cout << "input number of simulations to perform before lowering stick probability" << endl;
+    double sim_stick_num;
+    cin >> sim_stick_num;
+    if(sim_stick_num >= 1){
+      sys->simStickNum = sim_stick_num;
+    }else{
+      sys->simStickNum = 0;
+    }
+    cout << "simStickNum set to " << sys->simStickNum << endl;
 
     // setup data recording
     sys->recordData(nSims, intrvl, range);
@@ -208,6 +259,7 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     sys->setRunning();
     glutTimerFunc(0, drawFuncs::update, 0);
     break;
+  }
   }
   // tell openGL to redraw the window
 	glutPostRedisplay();

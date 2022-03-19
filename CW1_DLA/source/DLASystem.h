@@ -181,6 +181,18 @@ class DLASystem {
     //store results of sim (inc multiple)
     vector<vector<double>>* dataSet;
 
+    //randomise chance of sticking
+    bool randomStick = false;
+
+    //chance to stick on contact
+    double stickChance = 1;
+
+    //amount to change stickChance by in multiple simulations
+    double stickDiff = 0;
+
+    //number of simulations to perform in multiple simulations before changing the stick chance
+    int simStickNum = 0;
+
     //record data from DLA simulation
     void recordData(int numOfSims, int nInterval, pair<int, int> nRange);
     void updateRecording();
