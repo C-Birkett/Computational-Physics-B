@@ -65,11 +65,13 @@
 
 \usepackage{float}
 
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
 %%% END Article customizations
 
 %%% The "real" document content comes below...
 
-\title{\textbf{Title}}
+\title{\textbf{Investigation of fractal dimension in modified diffusion-limited aggregation algorithms}}
 \author{Candidate Number: 24669}
 \affil{Department of Physics, University of Bath, Bath BA2 7AY, United Kingdom}
 %\date{} % Activate to display a given date or no date (if empty),
@@ -80,7 +82,7 @@
  \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-  Diffusion limited aggregation (DLA) clusters are branching fractal objects which arise from the adhesion of random-walking particles. A fractal is an object with fractal dimension, that is its uniform mass density grows to a non-integer power of its linear size. This report examines the fractal dimension of a DLA cluster generated from an initial 'seed' particle (Eden model) and the effects of a random chance of particle adherence on the dimension of the brownian tree. DLA simulations are common in modeling of physical and biological processes such as in coagulated metal aeorosols and the growth of plants. We have determined the fractal dimension of an eden model brownian tree to be 1.72. this allows for better estimates of the density of x objects in y processes.
+  Diffusion-limited aggregation (DLA) clusters also known as Brownian trees are branching fractal objects that arise from the aggregation of random-walking particles. A fractal is an object with non-integer dimension, its uniform mass density grows by a non-integer power of its linear size. Because of their self-similar properties and scale invariance DLA systems are used to model a variety of physical and biological processes. As such, the effects of the conditions in a DLA simulation on the resulting DLA cluster are well studied. This report examines the fractal dimension of DLA clusters generated from an initial 'seed' particle with varying probability of particle adherence. We compare the efficacy of two methods of deriving fractal dimension $d_f$ from the particle number $N_c$ and linear size $r_{max}$ of simulated clusters - determining the mean fractal dimension $\overbar{d_f}$ of a sample of DLA clusters to be 1.733 $\pm$ 0.004. Further, we find a negative correlation between the probability of particle adhesion and fractal dimension in concurrence with other literature.
 
 \bigskip
 \end{abstract}
@@ -89,136 +91,137 @@
 \medskip
 
 \section*{Introduction}
-  Diffusion limited aggregation (DLA) systems have been used to model a variety of physical processes, including...
+  The primary mechanism in diffusion-limited aggregation (DLA) systems is Brownian motion - named for early contributor Robert Brown \cite{Pearle_2010} and later studied by Einstein \cite{Einstein_1905}, whereby fluctuations within a medium impart forces on diffuse particles, resulting in seemingly random motion. \textit{Ab-initio} simulation of all of the constituent particles of a diffuse substance in a medium is computationally expensive, however it has been shown by Donsker's theorem that Brownian motion is well approximated by the stochastic Weiner process. The Weiner process can be modelled as a discrete random walk on a lattice in the limit as the lattice constant tends to zero (the scaling limit). Thus, for practical computation a discrete random walk is a sufficient approximation of Brownian motion. Additionally some physical systems have characteristic length scales (e.g. electrodeposition \cite{Shaikh_2022}), further justifying their approximation by a discrete random walk.
 
-  DLA models produce brownian trees by adhering random-walking (brownian motion) particles to one another from some initial conditions. A common initial condition and the one that we examine in this report is a single initial particle (Eden model) from which the diffuse particles attach after random walking to the structure from a starting radius.
+  DLA models produce DLA clusters, also known as Brownian trees, fractal objects that grow by adhering random-walking particles to one another. A common initial condition in the study of natural systems is a single initial particle onto which the diffuse particles attach after random walking towards the structure from some starting radius. The single particle initial state model was first proposed by Eden in 1961 \cite{Eden_1961} to describe the growth of bacterial colonies from as a stochastic process. Further developments by Witten and Sander in 1981 \cite{Witten_1981} on metal-particle aggregation introduced clustering by Brownian motion to the Eden model, often referred to as 'classical' DLA. They also show DLA clusters to be critical phenomena arising from irreversible growth processes rather than an equilibrium ensemble. Other studies have extended the model to additional spatial dimensions \cite{Ball_1984}, or varying geometries such as curved \cite{Choi_2011} and spherical \cite{Tenti_2021} surfaces. Furthermore, Laplacian growth theory has succeeded in describing varying DLA systems along with other fractal generating systems under a single universality class \cite{Mathiesen_2005, Carlock_2016}.
 
-In our model of the orbit of Hyperion, we employ a two dimensional description of orbit derived from Newtonian mechanics\cite{Newtonian_orbit}, and a correction to include angle of orientation and corresponding angular frequency $(\theta(t), \omega(t))$. This results in a set of six coupled ODEs with corresponding initial conditions, in particular, we will examine the effects of taking different initial conditions of rotational state $(\theta(0),\omega(0))$ on the rotation over many orbits by solving the initial value problem numerically by Runge-Kutta-Fehlberg 45 (rkf45) approximation which is accurate to 5th order. To examine the results a Poincar\'e section of $\omega / \omega_H$ against $\theta$ is taken, where $\omega_H$ is the angular frequency of the orbit of Hyperion about Saturn.
+  DLA systems and the corresponding fractal geometry of DLA clusters are used to describe many natural phenomena because of their scale independence and self-similar nature. Some well studied applications of DLA include: electrodeposition \cite{Shaikh_2022}, dendrite formation \cite{Li_2008}, dielectric breakdown \cite{Pietronero_1984, Irurzun_2002}, bacterial colony growth \cite{Eden_1961}, biomedical imaging\cite{Choi_2011}, and plant growth \cite{Mandelbrot_1982, Zhang_2007}. The physical interpretation of fractal dimension as relating the growth and density of fractal and self-similar phenomena is valuable to many applications.
 
-\section*{DLA algorithm and simulation}
+  Modifications to specific aspects of the classical DLA model can result in significant changes to the generated DLA clusters. Example modifications include: changing the initial conditions of the system, including placement and quantity of initial particles \cite{Choi_2011}; altering the locations where new particles are introduced before they undergo Brownian motion \cite{Ranguelov_2011}; introducing different species of particles with differing adherence rules \cite{Ranguelov_2011}; or to the adhesion mechanism by altering the probability that a particle will successfully adhere to the cluster on contact \cite{Ranguelov_2011}. The changes in the DLA cluster induced by these modifications can affect the direction of growth (e.g. producing spiral clusters) and significantly, the dimension of the cluster. Ranguelov \textit{et al} \cite{Ranguelov_2011} found that lowering the probability of particles adhering on contact increases the dimension of the DLA cluster. This report aims to verify this finding by determining the fractal dimension of a classical DLA cluster, then comparing it with the dimension of clusters generated with an alternate scheme that varies the probability of adhesion.
 
-\subsection*{Brownian trees}
+\section*{Method and simulation}
 
-The model for position and velocity of Hyperions orbit follows directly from Newtonian mechanics, we limit the motion to the x-y plane. The position ($x_H, y_H$) and velocity ($vx_H, vy_H$) of Hyperion are described by the four coupled ODEs
+\subsection*{Classical DLA algorithm}
+  Our DLA algorithm is similar to that described by Witten and Sander \cite{Witten_1981}. A variation on the Eden model \cite{Eden_1961}, an intitial particle is placed at the origin of a two dimensional square grid of predetermined size. Three radii from the origin as seen in FIG \ref{DLA_diagram} are defined: $r_{max}, r_{start},$ and $r_{kill}$. The distance of the furthest particle in the cluster from the origin $r_{max}$ is used to estimate the linear size of the cluster. The distances $r_{start} = 1.2 \cdot r_{max}$ and $r_{kill} = 1.7 \cdot r_{start}$ determine the radii of creation and deletion of active random-walking particles in the system. The DLA algorithm is as follows:
 
-\begin{gather}
-\label{position_ODEs}
-  \frac{d x_{H}}{d t}=v x_{H},\quad \frac{d y_{H}}{d t}=v y_{H},\\
-  \frac{d v x_{H}}{d t}=-\frac{G M x_{H}}{\left(x_{H}^{2}+y_{H}^{2}\right)^{3 / 2}}, \frac{d v y_{H}}{d t}=-\frac{G M y_{H}}{\left(x_{H}^{2}+y_{H}^{2}\right)^{3 / 2}},
-\end{gather}
+  \begin{enumerate}
+    \item Initialise the system with one particle at the grid origin. $r_{start},$ and $r_{kill}$ are given suitable initial values.
+    \item Create a new particle at a random location on the circle defined by $r_{start}$ and set it as \textit{active}.
+    \item \textbf{while} there is an \textit{active} particle:
+    \begin{itemize}
+      \item \textbf{if} the position of the particle has distance from the origin greater or equal to $r_{kill}$ \textbf{then} the particle is removed.
+      \item \textbf{else if} the position of the particle is adjacent to a particle on the cluster \textbf{and} \textit{checkStick()} \textbf{then} the particle is added to the cluster and becomes \textit{inactive}.
+      \item \textbf{else} the \textit{active} particle performs a discrete random walk.
+    \end {itemize}
+  \item \textbf{if} the cluster is the desired size \textbf{stop}, \textbf{else} \textbf{goto} 2.
+  \end{enumerate}
 
-where $M = M_\text{Sat} + M_H$ with $M_\text{Sat} = 5.6832 \times 10^{26}$ kg and $M_H = 5.5855 \times 10^{18}$ kg the masses of Saturn and Hyperion respectively. $G = 6.67408 \times 10^{-11}$ Nm$^2$kg$^{-2}$ is the gravitational constant. For an orbit of eccentricity $e = 0.232$ these ODEs are paired with initial conditions
+  There are several things to note about the algorithm and its implementation: In this initial implementation of the DLA system we define the function \textit{checkStick()} to always return \textit{true}, so a particle will always adhere on contact with the cluster; The initial start radius $r_{start} = 5$ is chosen such that the cluster can be generated for several starting particles (otherwise $r_{start}$ as defined would start at 0); The domain of the simulation given by the grid size is predetermined, our simulations were performed in $3200 \times 3200$ grids, these are large enough to generate clusters with $~9\times10^5$ particles; Once $r_{kill}$ reaches half the grid size the simulation stops, our results do not use clusters of more than $2\times10^5$ particles, hence the selected grid size is sufficient.
 
-\begin{gather}
-\label{position_ICs}
-  x_H(0) = a(1-e), \quad y_H(0) = 0,\\
-  vx_H(0) = 0, \quad vy_H(0) = \sqrt{\frac{GM(1+e)}{a(1-e)}},
-\end{gather}
-
-where $a = 1.501 \times 10^9$ m is the semi-major axis of orbit. These initial conditions ensure an elliptic orbit clockwise in x-y starting at perihelion. From Keplar's laws we find the period of the orbit $T_H = \sqrt{4\pi^2a^3/GM} = 1.876\times10^6$ s from which we can determine the angular frequency $\omega_H = 2\pi/T_H = 3.349\times10^{-6}$ rad s$^{-1}$.
-
-This is a simple classical model of orbit that doesn't consider the rotation of Hyperion, we can quantify error in our numerical solution by considering the difference in position and velocity at perihelion after $n$ orbits, which should stay constant. Analysis of this difference shows that after $n=100$ orbits the difference in magnitude of position and velocity are ~10$^{-6} \times$ the magnitudes of our initial conditions. We will take this error as negligible as in our analysis we don't generate data for greater than 100 orbits. If a very large number of orbits were modelled this error could be far greater.
-
-\begin{figure}[tb!]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.95\columnwidth]{hyperion_orbit_diagram.png}
-  \caption{Diagram of the orbit of Hyperion in the x-y plane with angle $\phi$ to the line of periapse (major axis) and radius $R_H$. Shown are the four equal masses from which the axes of moments of inertia $I_1, I_2$ are determined. The orientation $\theta$ of Hyperion is defined as the angle made between the axis of smallest moment of inertia and the line of periapse. This diagram is taken from the project assignment sheet by S. Crampin \cite{Crampin}.}
-\label{orientation_diagram}
+\includegraphics[width=0.95\columnwidth]{DLA_diagram.png}
+  \caption{
+    Diagram of the diffusion-limited aggregation (DLA) system. A particle is created at a random point on $r_{start}$ and then undergoes a discrete random walk. If its position exceeds the distance $r_{kill}$ it is removed. If it makes contact with the cluster it is made inactive and joins the cluster. The DLA cluster grows from an initial seed particle located at the origin, its size can be estimated from $r_{max}$.
+  }
+  \label{DLA_diagram}
 \end{figure}
 
-\subsection*{Asphericity and rotation}
+  Some approximations are made in this algorithm to improve computational efficiency. The original model described by Witten and Sander \cite{Witten_1981} removes particles when they reach the edge of the grid. However, this can result in significant computation spent on random walking a particle in the domain, only for it to walk to the edge and be removed. Further, if it does random walk back to a point on the circle $r_{start}$ its previous motion away from the cluster will not effect its subsequent motion. We therefore restrict the random walking to within $r_{kill}$ which still allows for some motion away from the cluster while improving overall efficiency. This restriction will have an effect on the resulting DLA cluster. However, we assume the effect is negligible for the reasons outlined.
 
-The model is extended to consider the asphericity of Hyperion. Because of its asphericity it we can define its orientation $\theta$. Our model is simplified by restriction of motion the x-y plane of orbit, so its spin axis is in the $z$, normal ot the orbit plane, we also take this to be the axis with the largest mass moment of inertia $I_3$. The orientation of Hyperion $\theta$ is then defined to be the angle between its smallest moment of inertia and the line of periapse of its orbit, this is more clearly shown in FIG. \ref{orientation_diagram}.
+  The random number sampling used for the random walk and the initial positions of particles generated on $r_{start}$ uses pseudo-random number generation to efficiently generate large quantities of random numbers. To ensure that the system does not generate the same cluster every time, a 'true' random number is used as the \textit{seed} of the pseudo-random number generater for each new cluster. This allows for the efficient sampling of many psuedo-random numbers that are independent between simulations, the resulting DLA clusters are consequently independent from one another.
 
-The dynamics of the orientation $\theta$ are found by substituting the actual mass distribution with four equal masses in the x-y plane such that the lines of seperation between these masses align with the axes of moments of inertia $I_1, I_2$.
+\subsection*{Modified DLA - random adhesion}
+  Previously we define \textit{checkStick()} to always be \textit{true}. However, in the modified algorithm as described by Ranguelov \textit{et al} \cite{Ranguelov_2011} we redefine \textit{checkStick()} to check against a preset probability of particle adherence $P_{stick}$, retrieving the unmodified algorithm for $P_{stick} = 1$. If the particle fails to adhere to the cluster it will do nothing until the next update where it will perform another random walk. An additional modification is made to the random walk procedure, such that if a particle tries to move into an occupied grid position it will not move and instead \textit{checkStick()} again. This prevents multiple particles from occupying a single grid space, and allows particles to have multiple 'chances' to adhere to the cluster at the same site.
 
-We define the asphericity factor of Hyperion to be $\beta = \sqrt{3(I_2 - I_1)/I_3} = 0.89$. By examining the contributions to torque from our model we can retrieve an expression for the net torque $T$ about the axis of rotation aligned with $z$. This equivalent to the change in angular momentum $T = I_3 \frac{d^2\theta}{dt^2}$, and hence
+\subsection*{Fractal dimension}
+  A definition of dimension suitable to numerical computations of fractal dimension is the Minkowski-Bouligand or 'box-count' dimension: in a Euclidian space, the number of boxes $N$ (or 'density') with side length $a$ that cover a fractal of one dimensional size $R$ are related by
+  \begin{equation}
+      \begin{aligned}
+        & N = (R/a)^{d_f}\\
+        \implies & d_f = \frac{\ln(N)}{\ln(R/a)},
+      \end{aligned}
+      \label{dim_definition}
+  \end{equation}
 
-\begin{equation}
-    \frac{T}{I_3} = \frac{d^2\theta}{dt^2} = - \frac{GM_{sat}\beta^2}{2R_{H}^{3}}\sin 2(\theta - \phi)
-\end{equation}
+  where $d_f$ is the fractal dimension. With this definition we can retrieve well known dimensions such as $d_{line} = 1, d_{square} = 2$, etc.
 
-Where $\phi$ is the angle of the orbit around Saturn against the line of periapse and $R_H = \sqrt{x_H^2 + y_H^2}$ is the radius of orbit. We then use two coupled first order ODEs to describe the rotation of Hyperion
+      To determine the fractal dimension of the generated DLA clusters we first set $a=1$ as our DLA system is discrete in the grid, then $N=N_c$ is the number of particles in the cluster. We then assume that $r_{max}$ (the distance of the furthest point in the cluster from the origin) is representative of the one-dimensional size of the cluster with some correction terms $\alpha, \beta$. So our general relation is
 
-\begin{equation}
-  \label{angle_ODEs}
-  \frac{d\theta}{dt} = \omega, \quad \frac{d\omega}{dt} = - \frac{GM_{sat}\beta^2}{2R_{H}^{3}}\sin 2(\theta - \phi). 
-\end{equation}
+  \begin{equation}
+    \begin{aligned}
+    & N_c(r_{max}) = (\alpha r_{max})^{d_f}+\beta\\
+    \implies & \frac{d(\ln{N_c})}{d(\ln{r_{max}})} = \frac{d_f}{1 + \beta/(\alpha r_{max})^{d_f}}\\
+    \implies & d_f = \lim\limits_{r_{max} \to \infty} \frac{d(\ln{N_c})}{d(\ln{r_{max}})},
+    \end{aligned}
+    \label{dim_relation}
+  \end{equation}
 
-\begin{figure}[tb!]
+  hence for sufficiently large $r_{max}$ relative to the length scale $a = 1$ we can estimate the fractal dimension $d_f$ of a DLA cluster. 
+
+  Two methods are employed in the derivation of $d_f$ for individual DLA clusters: firstly a least squares fit method of the relationship described by (\ref{dim_relation}) is applied to the recorded values of $N_c$ and $r_{max}$ of the cluster, the corresponding $d_f$ is inferred from the fit with error; the second method approximates
+  \begin{equation}
+    d_f \approx \frac{\ln{N_c}}{\ln{r_{max}}}, \quad r_{max} \approx R >> a
+    \label{dim_approx}
+  \end{equation}
+      by assuming that $r_{max}$ is sufficiently large for some $N_c$. $d_f$ is then found at the largest $N_c$ and corresponding $r_{max}$ that the cluster attains. The efficacy of these methods when applied is discussed with the results of this report.
+
+\subsection*{Implementation}
+  Please see the appendix for practical details about the specific implementation of the DLA algorithm used for this report.
+
+\section*{Results and discussion}
+  We make the assumtion that the distribution of $r_{max}$ and corresponding fractal dimension $d_f$ between many randomly sampled clusters is normal (by the central limit theorem \cite{Sadovnik_2016}) - allowing for the statistical treatment of error. Unless otherwise stated any uncertainties given will be the 95\% confidence interval on the mean. Please see the appendix for examples of clusters generated.
+
+\subsection*{DLA cluster fractal dimension}
+  Using the DLA system as described we can generate datasets from several DLA clusters of varying sizes. In particular a dataset of 100 clusters of $N_c = 20000$ particles is generated with recorded values of $N_c$ and $r_{max}$ as they grow. For this dataset and the analysis in this subsection we set $P_{stick} = 1$.
+
+\begin{figure}[t!]
 \centering
-\includegraphics[width=0.95\columnwidth]{angular_freq_chaos.png}
-  \caption{Plot of angular frequency $\omega(t)$ against time (number of orbits $T_H$) of Hyperion for initial conditions $\omega(0) = 0.3\omega_H \theta(0) = \pi/7$ where $\omega_H$ is the angular frequency of Hyperions orbit about Saturn. There is chaotic behaviour with some seemingly recurring patterns, these can be interpreted as states of rotation that are more likely to occur in this chaotic system.}
-\label{angular_freq_chaos}
+\includegraphics[width=0.95\columnwidth]{100x20k_R.png}
+  \caption{
+    Mean cluster size $\overbar{r_{max}}$ against particle number $N_c$ over a sample of 100 randomly generated DLA clusters. Error bars representing the 95\% confidence interval on the mean of $r_{max}$ are comparable to symbol sizes and omitted for clarity. The mean fractal dimension $\overbar{d_f}$ of the 100 cluster sample is found to be 1.733$\pm$0.004. Overlaid in blue is a plot of $N_c={\overbar{r_{max}}}^{\overbar{d_f}}$.
+  }
+  \label{20k_R}
 \end{figure}
 
-The initial conditions of $\theta$ and $\omega$ are not known and will serve as our independent variables in further analysis.
+  Using the least squares fit method the relationship described in (\ref{dim_relation}) is fit to each DLA cluster generated and the $d_f$ are inferred. We find the mean $\overbar{d_f}$ to be 1.696$\pm$0.044, where the uncertainty includes a correction for fitting error. The mean $d_f$ from the ratio of logarithms method taken at $N_c = 20000$ on each cluster finds $\overbar{d_f} =$ 1.733 $\pm$ 0.004. The validity of the ratio of logarithms result is discussed in the following section. Both measurements agree with other literature which suggest a fractal dimension of $\sim~$1.7 in simulations \cite{Witten_1981, Choi_2011, Ranguelov_2011} and in real physical systems such as dielectric breakdown \cite{Pietronero_1984, Irurzun_2002}. A plot of the mean $r_{max} = \overbar{r_{max}}$ against $N_c$ is shown in FIG \ref{20k_R}, overlaid is a plot of $N_c={\overbar{r_{max}}}^{\overbar{d_f}}$ with the $\overbar{d_f}$ determined by the ratio of logarithms method.
 
-A plot of $\omega(t)$ against $t$ for some initial conditions $\omega(0) = 0.3\omega_H \theta(0) = \frac{\pi}{7}$ seen in FIG. \ref{angular_freq_chaos} displays some chaotic behaviour, that is, random behaviour in a deterministic system. Because of the chaotic nature of this motion, it is not possible to distinguish error from chaos in any measurements of $\theta$ and $\omega$.
+  The least squares fit method has significant drawbacks that are important to consider when interpreting these results. We make the assumtion that the relationship described in (\ref{dim_relation}) holds for all scales: the dummy variables $\alpha$ and $\beta$ are included to allow for corrections, however the least squares procedure will give weight to the data at small $N_c$, which is not as representative of the fractal properties that only appear at larger cluster sizes as $r_{max} >> a=1$. There are ways of mitigating this however, e.g. for a sufficiently large cluster the fit can be applied to data that omits $N_c$ smaller than some cutoff value. Larger clusters require significantly more computation which is why we limit our dataset to just 100 generated clusters of $N_c = 20000$. This computational cost becomes a greater issue in the following section.
 
-\section*{Poincar\'e section}
+  A key property of fractals is their scale invariance, which our DLA model cannot reproduce for clusters of very small particle number $N_c$. This can however be useful in modelling physical systems which do have characteristic length scales and discrete particles such as electrodeposition\cite{Shaikh_2022}. Other models may also generate DLA clusters from circular particles or on non-square grids, for smaller sized clusters this can better emulate Brownian motion due to the increased degrees of freedom. However, in the limit as the cluster size increases these should all be equivalent to the Weiner process / Brownian motion.
 
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=0.95\columnwidth]{poincare_section.png}
-  \caption{Poincar\'e section plot of $\omega / \omega_H$ against $\theta$ at $t = nT_H$ for $n$ orbits in the interval $[0,50]$ with initial conditions $\theta(0) \in [0, 2 \pi], \omega(0) \in [-1, 5 \omega_H]$ with intervals of $0.1 \pi$ and $0.3 \omega_H$ respectively (33201 points). The majority of the plot is dominated by a large 'chaotic sea' bounded by periodic patterns of states $\omega = A \mathrm{cos}(2\theta)+B$ for constants $a,b$ (highlighted in red). There are also notable 'islands' of states in the chaotic sea where there are voids with a distinct lack of rotational states a dense region of states within.}
-\label{poincare_section}
+\subsection*{Effect of random adhesion on fractal dimension}
+To examine the effects of random adhesion on the fractal dimension of DLA clusters a dataset of 100 clusters per sticking probability $P_{stick}\in[0.1, 1]$ with interval 0.1 (1000 clusters total) of size $N_c = 5000$ is generated. The mean dimension is determined as in the previous section, that is $d_f$ are found for each cluster and the mean $\overbar{d_f}$ is taken over the 100 samples at each $P_{stick}$. The result is 10 values of $\overbar{d_f}$ corresponding to each $P_{stick}$. Smaller clusters than in the previous dataset are generated due to the computational cost of generating larger clusters. A smaller dataset of larger clusters was created however the statistical uncertainties in the resulting $\overbar{d_f}$ were too large ($\sim 20\%$) when using the least squares fit method.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\columnwidth]{stick_dims_together.png}
+  \caption{
+    Derived mean fractal dimension $\overbar{d_f}$ against sticking probability $P_{stick}$. Two derivations of $\overbar{d_f}$ are shown: in blue $\overbar{d_f}$ is determined by the ratio of logarithms as in (\ref{dim_approx}) by taking the mean $d_f$ at $N_c=5000$ and corresponding $r_{max}$ of each cluster; in black $\overbar{d_f}$ is determined by fitting the relationship in (\ref{dim_relation}) to each cluster and taking the mean. In both error bars represent a 95\% confidence interval on the mean.
+  }
+  \label{stick_dims_together}
 \end{figure}
 
+  Both the least squares fit method and ratio of logarithms method of deriving $d_f$ are applied to this data, a comparison between the two can be seen in FIG \ref{stick_dims_together}. We can observe some striking differences in the derived $\overbar{d_f}$ between the two methods: for $P_{stick}=1$ both methods are able to reproduce within error the ratio of logarithms $\overbar{d_f}$ determined in the previous section. On this dataset at $P_{stick} = 1$ the ratio of logarithms finds $\overbar{d_f} =$ 1.735 $\pm$ 0.005 and the least squares fit finds $\overbar{d_f} = $ 1.761 $\pm$ 0.059. Note that the least squares fit method cannot reproduce its own results within error, this harms its validity.
+  
+  From the least squares fit method (shown in black in FIG \ref{stick_dims_together}) we see measurements of $\overbar{d_f}$ with no clear correlation, outlier values that deviate from the expected trend, and significant uncertainty. No reasonable conclusion about correlation between $d_f$ and $P_{stick}$ can be drawn from these results. On the other hand, the ratio of logarithms method shows a clear negative correlation between $d_f$ and $P_{stick}$ in line with the results of Ranguelov \textit{et al} \cite{Ranguelov_2011}. The validity of this method should not be taken for granted however, as it relies on the assumtion that measurements taken are in the limit $r_{max} >> a=1$. The small clusters in this dataset have $r_{max} \sim 10^2 \times a$, which seems to be sufficient for this approximation.
 
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=0.95\columnwidth]{unstable_islands.png}
-  \caption{Poincar\'e section plot for initial conditions $\theta(0) = -13\pi/16, -3\pi/16, 3\pi/16, 13\pi/16$, $\omega(0) = \omega_H$ and $n = 100$ (404 points, red). The states remain firmly in the bounds of the 'islands' in the chaotic sea. However for initial condition $\theta(0) = -13\pi/16, \omega(0) = \omega_H$ starting in just one island, over many more orbits $n = 1500$ (1501 points, purple) the orbit evolves to reveal a periodic unstable nonsynchronous set of states within the chaotic region (FIG \ref{poincare_section}, blue).}
-  \label{poincare_islands}
-\end{figure}
-
-\begin{figure*}[th!]
-  \centering
-  \begin{subfigure}[t]{.45\textwidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{poincare_nearby_bands.png}
-    \caption{Poincar\'e section plot for initial conditions $\theta(0) \in [0, \pi]$ with interval $\pi/10$, $\omega(0) = -\omega_H$ and $n = 100$ (1111 points). There are six distinct 'bands' of rotational states of form $A \mathrm{cos}(2\theta) + B$. Highlighted in red is the band from initial condition $\theta(0) = \pi/10$}
-    \label{poincare_bands}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[t]{.45\textwidth}
-    \centering
-    \includegraphics[width=0.95\textwidth]{poincare_nearby_bands_more_samples.png}
-    \caption{Poincar\'e section plot restricted to $\theta = [0, \pi]$ for initial conditions $\theta(0) \in [0, \pi]$ with interval $\pi/50$, $\omega(0) = -\omega_H$ and $n = 100$ (5151 points). When more samples are taken the bands become less distinct.}
-    \label{poincare_bands_more_samples}
-  \end{subfigure}
-  \label{poincare_detail_graphs}
-  \caption{Poincar\'e section plots of $\omega(t) / \omega_H$ against $\theta(t)$ at $t = nT_H$ for varying initial conditions $\omega(0), \theta(0)$ and over number of orbits $n$. Initial conditions are selected to highlight regions of interest.}
-\end{figure*}
-
-To gain further insight on this chaotic behavior in FIG \ref{poincare_section} we take a Poincar\'e section of $\omega(t) / \omega_H$ against $\theta(t)$ modulo $2\pi$ at perihelion $t = nT_H$ for $n \in \mathbb{N}$. The Poincar\'e section is taken with $n = 1 \cdots 100$ orbits and initial conditions $\theta(0) \in [0, 2 \pi], \omega(0) \in [-1, 5 \omega_H]$ with intervals of $0.1 \pi$ and $0.2 \omega_H$ respectively for a total of 33,201 sampled points. FIG \ref{poincare_section} and the procedure \verb+poincare()+ that generates these points are detailed in the appendix. Qualitatively, we observe a large 'chaotic sea' of rotational states bounded by periodic sets of states $\omega(t) = A \mathrm{cos}(2\theta) + B$ for constants $A, B$. These periodic sets of states continue outside of the chaotic sea in a discrete way, forming 'bands' of rotational states. Finally there are distinct 'islands' in the chaotic sea around $\omega = 0$ and $\theta = -13\pi/16, -3\pi/16, 3\pi/16, 13\pi/16$ where at each island there is a small dense region of states within a surrounding empty region.
-
-To further examine these periodic patterns in FIG \ref{poincare_detail_graphs} Poincar\'e sections are taken with initial conditions in these regions of interest. Firstly, in FIG \ref{unstable_islands} with initial conditions $\theta(0) = -13\pi/16, -3\pi/16, 3\pi/16, 13\pi/16, \omega(0) = \omega_H$ around the islands at we see four distinct sets of states with the same orientation $\theta$ over a very low range of angular frequency $\Delta\omega \approx 0.08\omega_H$. In FIG \ref{unstable_islands} a plot is taken with just one initial condition at the island corresponding to $\theta(0) = -13\pi/16$ over a large number of orbits $n = 1500$, we reveal an unstable periodic set of states inside the chaotic region. This set of states visits the four other islands after several orbits. It is likely that this corresponds to one of the nonsynchronous $p$ states inside the chaotic region discussed by J. Wisdom \textit{et al}. However due to the larger number of orbits measured, the error in position and velocity could be large enough to effect the states seen, especially due to their high dependence on initial conditions.
-
-In FIG \ref{poincare_bands} when initial conditions are taken across $\omega(0) = -\omega_H$ the result is a set of six distict 'bands' of rotational states. The primary similarity between these bands is that they have the form $A \mathrm{cos}(2\theta) + B$, and that they all cross the line $\omega(\theta)=-\omega_H$, with the highest and lowest bands having their minima and maxima respectively almost exactly at $-\omega_H$. This suggests that states outside of the chaotic region are more stable and generally stick to a set range of angular frequencies.
-
-We take a larger sample of points from more initial conditions $\theta(0) \in [0, \pi]$ with interval $\pi/50$ and $\omega(0)=-\omega_H$ in FIG \ref{poincare_bands_more_samples}. We see that the region bounded by the upper and lower bands in FIG \ref{poincare_bands} is now full of many sinusoidal patterns, however they are much harder to distinguish, and states near the upper and lower bounds begin to look looks chaotic. Interestingly at $\theta \approx 21\pi/32, \omega \approx -0.95\omega_H$ there is a particularily dense region of states. The fact that chaos can be found in the fine strucure of a Poincar\'e plot outside of the chaotic sea is supported by the literature \cite{}
-
-This is further supported by additional computations excluded from this written report but that are accessible in the accompanying worksheet that show for a single initial condition state, for small $n ~ 100$ a band can be isolated and is stable, however as the orbit evolves to say, $n ~ 10000$ it becomes chaotic, but is still bounded in $\omega$ to the same region as the isolated band. This computation of course may be heavily effected by error in computing values for such a large $n$.
-
-\section*{Comparison with a less eccentric orbit}
-To develop our insight on the effects of orbit eccentricity $e$ and the asphericity $\beta$ on the rotational states of an orbit we construct a toy model which substitutes the eccentricity of orbit and apshericity Hyperion to that of the Martian moons Deimos and Phobos. All other parameters, in particular the masses $M_\text{Sat}, M_H$ involved and the semi-major axis $a$ are preserved.
-
-mars graphs discussion here
+  An intuitive interpretation of this negative correlation is that: when a particle fails to adhere in a denser region of the cluster, its subsequent random motion is more likely to collide with another nearby cluster particle. This means denser 'branches' will grow faster than less dense regions in the cluster. This also allows particles to diffuse towards the centre of the cluster and fill in gaps, where they otherwise would have been 'captured' nearer to the starting radius $r_{start}$ \cite{Ranguelov_2011}. These effects overall increase the density of the generated cluster, and thus its fractal dimension.
 
 \section*{Conclusion}
 
-begin conclusion
+  By comparing the two methods of deriving $d_f$ over varying $P_{stick}$ and critically evaluating the results they produce, we conclude that the ratio of logarithms method is superior to the least squares fit method. The least squares fit method is unsuitable for determining $d_f$ under the conditions we have applied it because of its large statistical uncertainty and inability to reproduce its own results between similar datasets. As such, we will disregard the results from the least squares fit method in our following conclusions. In particular we will disregard its determined fractal dimension for $P_{stick} = 1$ and the lack of correlation between $\overbar{d_f}$ and $P_{stick}$ shown in FIG \ref{stick_dims_together}.
 
-poincare results
+  Using the ratio of logarithms method we determin the fractal dimension of DLA clusters with sticking probability $P_{stick} = 1$ to be $\overbar{d_f} =$ 1.733 $\pm$ 0.004. Additionally we find a negative correlation between the fractal dimension $d_f$ and sticking probability $P_{stick}$ in concurrence with the literature \cite{Ranguelov_2011, Pietronero_1984}. This shows that simple changes to the DLA algorithm can have significant effects on the properties of the resulting clusters.
+  
+  An example application of the modified probability of adhesion algorithm to a physical system is Pietronero and Wiesmann's model for dielectric breakdown \cite{Pietronero_1984}. In the model, they give the probability of adhesion as a function of the local electric field by some relation coefficient. Their findings also show a negative correlation between fractal dimension and adhesion probability.
 
-mars results
+  Ranguelov \textit{et al} also make modifications to the radius at which the particles are generated $r_{start}(\theta)$ by setting it as a function of the radius of the cluster at angle $\theta$ + a constant. They also introduce multiple species of particles which have different probabilities of attaching to each other. The resulting clusters can vary drastically in shape and dimension. Their findings provide examples of further modifications that can be made to a DLA system to produce new fractals or better adapt the DLA algorithm to model natural phenomena.
 
-End conclusion
+  Further improvements could be made to our results by sampling many more clusters, and clusters of larger sizes to reduce our statistical error. This would also justify further improvements to our implementation of the algorithm that increase computational efficiency. With improving understanding of fractals and DLA systems we can hope to better model the natural processes in which they are seen.
 
 \section*{Acknowledgements}
-We would like to acknowledge the contributions of Dr S. Crampin for his code and resources on which this model is based, and N. Roberts for providing the latex template used in the creation of this report.
+We would like to acknowledge the contributions of Dr A. Souslov and Dr D. Tsang for their code and resources on which the unmodified DLA model is based.
 
 %%%References
 \bibliographystyle{ieeetr}
@@ -227,59 +230,149 @@ We would like to acknowledge the contributions of Dr S. Crampin for his code and
 
 \clearpage
 
+\onecolumn
+
 \section*{Appendix}
-The numerical... was done using maple
 
-Try to make this single width
+\subsection*{Example DLA clusters}
 
-Eqns, ICs
-\begin{lstlisting}
-Eqns := {diff(vxh(t), t) = -G*M*xh(t)/Rh(t)^3,
-          diff(vyh(t), t) = -G*M*yh(t)/Rh(t)^3,
-          diff(xh(t), t) = vxh(t),
-          diff(yh(t), t) = vyh(t)};
-
-ICs := {vxh(0) = 0,
-        vyh(0) = sqrt(G*M*(1 + e)/(a*(1 - e))),
-        xh(0) = a*(1 - e),
-        yh(0) = 0};
-\end{lstlisting}
-
-with rotation TIDY THIS
-\begin{lstlisting}
-Eqns_rotation := Eqns union {diff(omega(t), t) = -G*M_sat*beta^2*(xh(t)*sin(theta(t)) - yh(t)*cos(theta(t)))*(xh(t)*cos(theta(t)) + yh(t)*sin(theta(t)))/Rh(t)^5,
-diff(theta(t), t) = omega(t)};
-\end{lstlisting}
-
-Code developed for use in taking Poincar\'e sections: The \textit{poincare()} procedure, written in maple, takes inputs for \textit{theta0, omega0|} the initial conditions for rotation and \textit{n} the number of orbits to generate data for. \textit{theta0} and \textit{omega0} should be given as lists of values, for a single intitial condition lists of one item can be passed to the procedure.\textit{poincare()} will then find each state $(\theta(t) \text{mod} 2\pi, \omega(t)/\omega_H)$ where $t = nT_H$ for $n$ from 0 to $n$ at every combination of initial conditions $\theta(0) = \text{theta0}$ and $\omega(0) = \text{omega0}$ it recieves. The resulting data is output as an array of touples.
-
-\begin{lstlisting}
-poincare := proc(theta0::list, omega0::list, n::nonnegint)
-  local data, local_ICs, soln, omeg, thet, i, j, k;
-  global wh, Eqns_rotation, ICs, ICs_rotation;
-  data := [];
-  for i in theta0 do 
-    for j in omega0 do 
-      local_ICs := ICs union {omega(0) = j, theta(0) = i};
-      soln := dsolve({Eqns_rotation[], local_ICs[]}, numeric, maxfun = -1, range = 0 .. (n + 1)*Th);
-      for k from 0 to n do 
-        omeg := rhs(soln(k*Th)[2])/wh;
-        thet := frem(rhs(soln(k . Th)[3]), evalf(2*Pi));
-        data := [op(data), [thet, omeg]];
-      end do;
-    end do;
-  end do;
-  return data;
-end proc:
-\end{lstlisting}
-
-\clearpage
-
-\begin{figure*}[t]
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.95\textwidth]{poincare_section_large.png}
-  \caption{Poincar\'e section plot of $\omega / \omega_H$ against $\theta$ at $t = nT_H$ for $n$ orbits in the interval $[0,50]$ with initial conditions $\theta(0) \in [0, 2 \pi], \omega(0) \in [-1, 5 \omega_H]$ with intervals of $0.1 \pi$ and $0.3 \omega_H$ respectively (33201 points). The majority of the plot is dominated by a large 'chaotic sea' bounded by periodic patterns of states $\omega = A \mathrm{cos}(2\theta)+B$ for constants $a,b$ (highlighted in red). There are also notable 'islands' of states in the chaotic sea where there are voids with a distinct lack of rotational states a dense region of states within.}
-\label{poincare_section_large}
-\end{figure*}
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{p1.png}
+    \caption{$P_{stick} = 1$}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{p01.png}
+    \caption{$P_{stick} = 0.1$}
+  \end{subfigure}
+  \caption{
+    Example DLA clusters generated to $N_c = 10000$.
+  }
+\end{figure}
+
+\subsection*{Confidence intervals}
+  For the mean quantities in this report error is presented as the 95\% confidence interval on the mean given by
+  \begin{equation}
+    a = 1.96\frac{1}{\sqrt{n}}\sigma_x
+  \end{equation}
+  For some mean quantity $\overbar{x}$ where $\sigma_x$ is the standard deviation on the mean and $n$ is the number of samples. The confidence interval is then $[\overbar{x}-a, \overbar{x}+1]$. This can be interpreted as the interval such that there is a 95\% chance the interval contains the true population mean of $\overbar{x}$.
+
+\subsection*{Implementation of algorithm}
+  The DLA data discussed in this report was generated by an implementation of the described DLA algorithm in C++. Standard C++ libraries are used for sampling of 'true' and psuedo-random numbers used in the random walk and particle generation. Utilities were written to record multiple simulations with varying parameters and to export recorded data from simulations to a csv format. Data analysis and derivation of fractal dimension was performed in Python using the numpy and pandas libraries. All computations were performed on a 64-bit desktop processor running Linux Mint 20.1 'Ulyssa'.
+
+  \textbf{Note: when compiling and running the C++ code provided, the makefile in 'source' has been edited. To compile the code place the .cpp and .h files into a directory called 'source' and add in the missing/unedited files (Particle.h, Window.h, Window.cpp). Run 'make -B -C ./source/' from the directory above 'source'. The compiled binary and the data it produces are in this directory, execute the binary using './run'. The python data analysis file 'DLA.py' should also be run from this same directory}
+
+  The changes made to the C++ code given by Dr A. Souslov and Dr D. Tsang are spread throughout the source code provided (i.e: CSVWrite.h, DLASystem.cpp, DLASystem.h, mainDLA.cpp, rnd.h, Makefile). Most of the changes made are used when pressing 't' in the simulation window to set parameters for data recording and $P_{stick}$ etc. Some new functions have been added to the DLASystem class, and a new class CSVWrite is written for data recording. Some select functions are presented here but you would do best to look at the source code with comments.
+
+\begin{lstlisting}
+// check if the last particle should stick (to a neighbour)
+int DLASystem::checkStick() {
+	Particle *lastP = particleList[numParticles - 1];
+	int result = 0;
+	// loop over neighbours
+	for (int i = 0; i < 4; i++) {
+		double checkpos[2];
+		setPosNeighbour(checkpos, lastP->pos, i);
+		// if the neighbour is occupied...
+		if (readGrid(checkpos) == 1)
+      if(randomStick){
+	      double rr = static_cast<double>(rgen.randomInt(1000));
+        if (static_cast<double>(rr/1000.0) < stickChance){result = 1;}
+        else {result = 0;}
+      }
+      else {result = 1;}
+	}
+	return result;
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+void DLASystem::recordData(int numOfSims, int nInterval_, pair<int, int> nRange_) {
+  if(running != 0 && !recording){cout << "please pause simulation before recording data" << endl;}
+  else{ 
+    if (numOfSims >= 2){
+      cout << "Starting DLA multiple recording" << endl;
+      simNum = numOfSims;
+      numSims = numOfSims;
+    }else cout << "Starting DLA recording" << endl;
+    
+    recording = true;
+
+    nInterval = nInterval_;
+    nRange = nRange_;
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+//record data on update
+void DLASystem::updateRecording() {
+  if(numParticles == nRange.second){
+    //cout << "recording data at N = " << numParticles << endl;
+    numData->push_back(static_cast<double>(numParticles));
+    radiusData->push_back(clusterRadius);
+
+    if (simNum == numSims) {dataSet->push_back(*numData);} //only need one column of this
+
+    //when finished in range write data to dataSet \& reset sim
+    if (simNum >= 1){
+      dataSet->push_back(*radiusData);
+      cout << "Sucessfully recorded sim number " << simNum << " data in range (" << nRange.first << ", " << nRange.second << ") with interval " << nInterval << endl;
+
+      //reset initial conditions
+      Reset(); //will reset numData and radiusData
+      setRandomSeed();
+      setFast();
+
+      if (simStickNum != 0 && simNum \% simStickNum == 1 && simNum != numSims){
+        if (stickDiff != 0){
+          stickChance -= stickDiff;
+          if(stickChance<=0){
+            cout << "sticking chance is now 0, finishing recording" << endl;
+            writeDataCSV();
+            recording = false;
+            pauseRunning();
+          }
+          else cout << "new sticking chance set to " << stickChance << endl;
+        }
+      }
+
+      setRunning();
+
+      if (simNum == 1) {writeDataCSV();}
+
+      simNum--;
+      //cout << "conditions reset for simulation number " << simNum << endl;
+    }
+
+    if (simNum <= 0) {recording = false; pauseRunning();}
+  }
+  else if(numParticles > nRange.first
+          && numParticles % nInterval == 0
+          && numParticles > numData->size() * nInterval + nRange.first){
+    //cout << "recording data at N = " << numParticles << endl;
+    numData->push_back(static_cast<double>(numParticles)); //dont really need to do this...
+    radiusData->push_back(clusterRadius);
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+//write recorded data to a CSV file
+void DLASystem::writeDataCSV(){
+  auto csv = new CSVWrite("./data.csv");
+
+  csv->WriteVector(dataSet);
+  csv->CSVClose();
+
+  //clearDataSet();
+
+  recording = false; //should be false anyways
+}
+\end{lstlisting}
 
 \end{document}

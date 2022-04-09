@@ -154,7 +154,7 @@ class DLASystem {
     void setWinBackgroundWhite() { glClearColor(1.0, 1.0, 1.0, 1.0); }
     void setWinBackgroundBlack() { glClearColor(0.0, 0.0, 0.0, 0.0); }
 
-    //Code Written by CB from here
+    //Code Written by candidate # 24669 from here
     
     void setRandomSeed() {rgen.setSeed(rgen.trueRand());}
     

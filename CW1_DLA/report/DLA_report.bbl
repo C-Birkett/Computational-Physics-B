@@ -1,30 +1,86 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
-\bibitem{NASA_Hyperion}
-NASA, ``Hyperion in depth,'' 2019.
-\newblock Available from
-  https://solarsystem.nasa.gov/moons/saturn-moons/hyperion/in-depth/ [Accessed
-  16 December 2021].
+\bibitem{Pearle_2010}
+P.~Pearle, B.~Collett, K.~Bart, D.~Bilderback, D.~Newman, and S.~Samuels,
+  ``What brown saw and you can too,'' {\em Am. J. Phys.}, vol.~78,
+  p.~1278–1289, 2010.
 
-\bibitem{Giuseppe_1966}
-G.~{Colombo} and I.~I. {Shapiro}, ``{The Rotation of the Planet Mercury},''
-  {\em Astrophysics Journal}, vol.~145, p.~296, jul 1966.
+\bibitem{Einstein_1905}
+A.~Einstein, ``Über die von der molekularkinetischen theorie der wärme
+  geforderte bewegung von in ruhenden flüssigkeiten suspendierten teilchen,''
+  {\em Annalen der Physik}, vol.~322, no.~8, pp.~549--560, 1905.
 
-\bibitem{Wisdom_1984}
-J.~Wisdom, S.~J. Peale, and F.~Mignard, ``The chaotic rotation of hyperion,''
-  {\em Icarus}, vol.~58, pp.~137--152, 1984.
+\bibitem{Shaikh_2022}
+Y.~H. Shaikh, J.~Pathan, A.~Jallel, and A.~R. Khan, ``Nickel dendritic pattern
+  in electrodeposition at different temperatures,'' {\em ES Materials $\&$
+  Manufacturing}, vol.~15, pp.~78--84, 2022.
 
-\bibitem{Klavetter_1989}
-J.~J. {Klavetter}, ``{Rotation of Hyperion. I. Observations},'' {\em
-  Astronomical Journal}, vol.~97, p.~570, feb 1989.
+\bibitem{Eden_1961}
+M.~Eden, ``A two-dimensional growth process,'' in {\em Proceedings of Fourth
+  Berkeley Symposium on Mathematics}, vol.~4, p.~223–239, University of
+  California Press., 1961.
 
-\bibitem{Binzel_1986}
-R.~P. Binzel, J.~R. Green, and C.~B. Opal, ``Chaotic rotation of hyperion?,''
-  {\em Nature}, vol.~320, pp.~1476--4687, 1986.
+\bibitem{Witten_1981}
+T.~A. Witten and L.~M. Sander, ``Diffusion-limited aggregation, a kinetic
+  critical phenomenon,'' {\em Phys. Rev. Lett.}, vol.~47, pp.~1400--1403, Nov
+  1981.
 
-\bibitem{Boyd_1994}
-P.~Boyd, G.~Mindlin, G.~Robert, and S.~Hernán, ``Topological analysis of
-  chaotic orbits: Revisiting hyperion,'' {\em The Astrophysical Journal},
-  vol.~431, 09 1994.
+\bibitem{Ball_1984}
+R.~C. Ball, M.~Nauenberg, and T.~A. Witten, ``Diffusion-controlled aggregation
+  in the continuum approximation,'' {\em Physical Review A}, vol.~29,
+  pp.~2017--2020, 1984.
+
+\bibitem{Choi_2011}
+J.~Choi, D.~Crowdy, and M.~Z. Bazant, ``Diffusion-limited aggregation on curved
+  surfaces,'' {\em {EPL} (Europhysics Letters)}, vol.~91, p.~46005, aug 2010.
+
+\bibitem{Tenti_2021}
+J.~M. Tenti, S.~N. Hern\'andez~Guiance, and I.~M. Irurzun, ``Fractal dimension
+  of diffusion-limited aggregation clusters grown on spherical surfaces,'' {\em
+  Phys. Rev. E}, vol.~103, p.~012138, Jan 2021.
+
+\bibitem{Mathiesen_2005}
+J.~Mathiesen, I.~Procaccia, H.~L. Swinney, and M.~Thrasher, ``The universality
+  class of diffusion-limited aggregation and viscous fingering,'' {\em EPL},
+  vol.~76, pp.~257--263, 2005.
+
+\bibitem{Carlock_2016}
+J.~R. Nicol'as-Carlock, J.~L.~E. Carrillo-Estrada, and V.~Dossetti,
+  ``Universality of fractal to non-fractal morphological transitions in
+  stochastic growth processes,'' {\em arXiv: Statistical Mechanics}, 2016.
+
+\bibitem{Li_2008}
+D.~Li, Z.~Zheng, Z.~Shui, M.~Long, J.~Yu, K.~W. Wong, L.~Yang, ‖, L.~Zhang,
+  and W.-M. Lau, ``Using elemental se and ag to grow pure ag2se
+  dendrites/dendritic-films of highly oriented (001) nanocrystals,'' {\em
+  Journal of Physical Chemistry C}, vol.~112, pp.~2845--2850, 2008.
+
+\bibitem{Pietronero_1984}
+L.~Pietronero and H.~Wiesmann, ``Stochastic model for dielectric breakdown.,''
+  {\em J Stat Phys}, vol.~36, p.~909–916, 1984.
+
+\bibitem{Irurzun_2002}
+I.~Irurzun, P.~Bergero, V.~Mola, M.~Cordero, J.~Vicente, and E.~Mola,
+  ``Dielectric breakdown in solids modeled by dbm and dla,'' {\em Chaos,
+  Solitons \& Fractals}, vol.~13, no.~6, pp.~1333--1343, 2002.
+
+\bibitem{Mandelbrot_1982}
+B.~B. Mandelbrot, {\em The Fractal Geometry of Nature}.
+\newblock Benoit B. Mandelbrot, 1~ed., 1982.
+
+\bibitem{Zhang_2007}
+A.~Zhang, Dongsheng;~Samal and J.~R. Brandle, ``A method for estimating fractal
+  dimension of tree crowns from digital images,'' {\em CSE Journal Articles},
+  vol.~97, 2007.
+
+\bibitem{Ranguelov_2011}
+B.~Ranguelov, D.~Goranova, V.~Tonchev, and R.~Yakimova, ``Diffusion limited
+  aggregation with modified local rules,'' {\em Comptes Rendus de L'Academie
+  Bulgare des Sciences}, vol.~65, 05 2011.
+
+\bibitem{Sadovnik_2016}
+E.~V. Sadovnik, ``A central limit theorem for fluctuations of internal
+  diffusion-limited aggregation with multiple sources urop + final paper
+  2016,'' 2016.
 
 \end{thebibliography}

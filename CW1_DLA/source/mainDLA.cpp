@@ -1,3 +1,15 @@
+//Candidate number 24669
+
+//Note to assessor:
+//The changes I've made to the program are quite diffuse (...get it) so it will be quite difficult to pick out exactly which functions I've altered. The best place to look is probably in case 't' in drawFuncs::handleKeypress() which is the main input I use to run all of my utilities at once (recording data etc)
+//Otherwise I have tried to label where I have added new functions in header files, everything should be fairly well commented
+//CSVWrite.h is my own CSV writing class it's quite simple but it works for purpose
+//I have also made a slight change to rnd.h so that I can sample 'true' random numbers
+
+//If I have time I'll pick out some key changes for my appendix
+
+//Please note that when running this program the end user is myself, so it will not handle any bad inputs well - it is assumed that you know what you are doing when using the program
+
 #include <GL/glut.h>
 #include <iostream>
 #include <stdio.h>
@@ -98,68 +110,87 @@ void drawFuncs::introMessage() {
 // openGL function deals with the keyboard
 void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 	switch (key) {
-  case 'h':
+  case 'h':{
     drawFuncs::introMessage();
     break;
-	case 'q':
-	case 'e':
+           }
+	case 'q':{
 		cout << "Exiting..." << endl;
     // delete the system
     delete sys;
 		exit(0);
 		break;
-  case 'p':
+           }
+	case 'e':{
+		cout << "Exiting..." << endl;
+    // delete the system
+    delete sys;
+		exit(0);
+		break;
+           }
+  case 'p':{
     cout << "pause" << endl;
     sys->pauseRunning();
     break;
-  case 'g':
+           }
+  case 'g':{
     cout << "go" << endl;
     sys->setRunning();
     glutTimerFunc(0, drawFuncs::update, 0);
     break;
-  case 's':
+           }
+  case 's':{
     cout << "slow" << endl;
     sys->setSlow();
     break;
-  case 'w':
+           }
+  case 'w':{
     cout << "white" << endl;
     sys->setWinBackgroundWhite();
     break;
-  case 'b':
+           }
+  case 'b':{
     cout << "black" << endl;
     sys->setWinBackgroundBlack();
     break;
-  case 'f':
+           }
+  case 'f':{
     cout << "fast" << endl;
     if(sys->slowNotFast <= 0) sys->setSuperFast();
     else sys->setFast();
     break;
-  case 'r':
+           }
+  case 'r':{
     cout << "reset" << endl;
     sys->Reset();
     break;
-  case 'z':
+           }
+  case 'z':{
     cout << "zoom" << endl;
     sys->pauseRunning();
     sys->viewAddCircle();
     break;
-  case 'u':
+           }
+  case 'u':{
     cout << "upd" << endl;
     sys->Update();
     break;
+           }
   //print number of particles and radius
-  case '0':
+  case '0':{
     cout << "number of particles and radius:" << endl;
     cout << sys->getNumParticles() << ", " << sys->getClusterRadius() << endl;
     cout << "simple fractal dimension with a = 1: " << endl;
     cout << sys->simpleFracDim() << endl;
     break;
+           }
   //end recording data (use when STOP)
   case 'm':{
     cout << "writing current data to csv & ending recording" << endl;
     sys->writeDataCSV();
-    break;}
-  case 'v':
+    break;
+           }
+  case 'v':{
     cout << "input viewsize: ";
     double vwsze;
     cin >> vwsze;
@@ -172,7 +203,8 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
       }
     }
     else sys->setViewSize(vwsze);
-
+    break;
+           }
   //set sticking chance
   case 'j':{
     cout << "input probability of particle sticking on contact" << endl;
@@ -188,8 +220,9 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     }
     cout << "sticking probability set to " << sys->stickChance << endl;
     break;
-  }
+           }
   //perform multiple simulations
+  //this essentially summarises everything I (candidate # 24669) have added to the program
   case 't':{
     cout << "Set up recording parameters:" << endl;
 
@@ -259,7 +292,7 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     sys->setRunning();
     glutTimerFunc(0, drawFuncs::update, 0);
     break;
-  }
+           }
   }
   // tell openGL to redraw the window
 	glutPostRedisplay();
