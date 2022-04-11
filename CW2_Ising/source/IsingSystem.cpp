@@ -192,3 +192,31 @@ void IsingSystem::Update() {
 	MCsweep();
 }
 
+// code written for cw:
+
+// vector of every grid value from a given list of positions
+// default all positions
+vector<int> IsingSystem::getFullGridValues(){
+  vector<int> vals;
+  return vals;
+}
+
+vector<int> IsingSystem::getFullGridValues(vector<int*> positions){
+  vector<int> vals;
+  for(int i=0; i<positions.size(); i++){
+    vals.push_back(readGrid(positions.at(i)));
+  }
+  return vals;
+}
+
+
+double IsingSystem::getMagnetisation(){
+  int sum = 0;
+  for(int i=0; i < gridSize; i++){
+    for(int j=0; j < gridSize; j++){
+      sum += readGrid(toPos(i,j));
+      cout << "pos = " << tmpPos[0] << tmpPos[1] <<endl;
+    }
+  }
+  return static_cast<double>(sum) / static_cast<double>(gridSize*gridSize);
+}

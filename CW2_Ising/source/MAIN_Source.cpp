@@ -63,6 +63,7 @@ void drawFuncs::introMessage() {
 	cout << "  g to go; p to pause" << endl;
 	cout << "  h for hotter; c for colder" << endl;
 	cout << "  u for update once" << endl;
+	cout << "  m to print magnetisation" << endl;
 }
 
 void drawFuncs::quitMe(int val) {
@@ -119,6 +120,8 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 	case '?':
 		drawFuncs::introMessage();
 		break;
+  case 'm':
+    cout << sys->getMagnetisation();
 	}
 	glutPostRedisplay();
 }

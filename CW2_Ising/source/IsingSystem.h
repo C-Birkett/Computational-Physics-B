@@ -14,6 +14,8 @@
 #include "Window.h"
 #include "rnd.h"
 
+#include <array>
+
 using namespace std;
 
 // IsingSystem class
@@ -41,6 +43,14 @@ private:
 
 	// this an output file (in case we need one)
 	ofstream logfile;
+
+  // vector of every position in grid
+  // NOT DOABLE due to pos being of type int[]
+  //vector<array<int, 2>> positions;
+  vector<int> positions;
+  //vector<pair<int,int>> positions;
+  
+  int tmpPos[2];
 
 public:
 	// constructor
@@ -91,5 +101,20 @@ public:
 
 	// draws the system as squares
 	void DrawSquares();
+
+  // functions written for CW:
+  
+  // vector of every grid value from a given list of positions
+  // default all positions
+  vector<int> getFullGridValues();
+  vector<int> getFullGridValues(vector<int*> positions);
+  
+  // return system magnetisation
+  double getMagnetisation();
+
+  int* toPos(int x, int y){
+    tmpPos[0] = x; tmpPos[1]=y;
+    return tmpPos;
+  };
 };
 
