@@ -11,6 +11,9 @@ private:
 	std::uniform_int_distribution<int> *intmax;
 	std::uniform_real_distribution<double> *real01;
 
+  //for generating random seeds
+  std::random_device true_rnd;
+
 public:
 	// constructor
 	rnd() {
@@ -27,5 +30,7 @@ public:
 	// member functions for generating random double in [0,1] and random integer in [0,max-1]
 	double random01() { return (*real01)(generator); }
 	int    randomInt(int max) { return (*intmax)(generator) % max; }
+
+  int trueRand() {return true_rnd();}
 };
 

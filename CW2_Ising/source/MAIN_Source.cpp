@@ -58,12 +58,13 @@ int main(int argc, char **argv) {
 void drawFuncs::introMessage() {
 	cout << "Keys (while in graphics window):" << endl;
 	cout << "  ? to print this message" << endl;
-	cout << "  q or e to quit (or exit)" << endl;
+	cout << "  q to quit" << endl;
 	cout << "  f for fast; s for slow" << endl;
 	cout << "  g to go; p to pause" << endl;
 	cout << "  h for hotter; c for colder" << endl;
 	cout << "  u for update once" << endl;
 	cout << "  m to print magnetisation" << endl;
+	cout << "  t to set up data recording" << endl;
 }
 
 void drawFuncs::quitMe(int val) {
@@ -77,7 +78,6 @@ void drawFuncs::quitMe(int val) {
 void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 	switch (key) {
 	case 'q':
-	case 'e':
 		cout << "Exiting..." << endl;
 		// pause
 		sys->pauseRunning();
@@ -110,8 +110,9 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 		sys->pauseRunning();
 		break;
 	case 'u':
-		cout << "upd" << endl;
+		cout << "upd: " << endl;
 		sys->Update();
+    sys->printSimInfo();
 		break;
 	case 'r':
 		cout << "reset" << endl;
@@ -121,7 +122,43 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
 		drawFuncs::introMessage();
 		break;
   case 'm':
-    cout << sys->getMagnetisation();
+    cout << "System magnetisation:" << endl;
+    cout << sys->getMagnetisation() << endl;
+    break;
+  case 'e':
+    cout << "System energy per spin:" << endl;
+    cout << sys->getEnergy() << endl;
+    break;
+  case 't':
+    cout << "Set up recording parameters:" << endl;
+
+    cout << "input number of sweeps to perform: ";
+    int nSweeps;
+    cin >> nSweeps;
+    cout << "number of sweeps set as: "<< nSweeps << endl;
+
+    cout << "input initial number of sweeps to  ignore:";
+    int nISweeps;
+    cin >> nISweeps;
+    cout << "number of initial sweeps set as: "<< nISweeps << endl;
+
+    cout << "input interval number of sweeps to record in:";
+    int intSweeps;
+    cin >> intSweeps;
+    cout << "sweep interval set as: "<< intSweeps << endl;
+
+    cout << "input number of simulations to perform:";
+    int nSims;
+    cin >> nSims;
+    cout << "number of sims set as: "<< nSims << endl;
+
+    sys->setRecording(nSims, nISweeps, nSweeps, intSweeps);
+
+    cout << "press g (go) in the window to start" << endl;
+
+    sys->setFast();
+		//drawFuncs::update(0);
+    break;
 	}
 	glutPostRedisplay();
 }

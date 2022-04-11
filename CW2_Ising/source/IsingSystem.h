@@ -14,7 +14,7 @@
 #include "Window.h"
 #include "rnd.h"
 
-#include <array>
+#include "CSVWrite.h"
 
 using namespace std;
 
@@ -46,11 +46,36 @@ private:
 
   // vector of every position in grid
   // NOT DOABLE due to pos being of type int[]
-  //vector<array<int, 2>> positions;
   vector<int> positions;
-  //vector<pair<int,int>> positions;
   
   int tmpPos[2];
+
+  // data recording parameters:
+  bool isRecording;
+
+  // number of initial sweeps to ignore
+  int initialSweeps;
+
+  // interval between measurements
+  int sweepInterval;
+
+  // number of sweeps performed
+  int numSweeps;
+
+  // number of sims performed
+  int numSims;
+
+  // number to perform before Reset() or write data, 1 indexed
+  int maxSweeps;
+  int maxSims;
+
+  // recording data:
+  vector<double>* sweepData;
+  vector<double>* magnetisationData;
+  vector<double>* energyData;
+
+  //2d dataSet to write to csv
+  vector<vector<double>>* dataSet;
 
 public:
 	// constructor
@@ -104,17 +129,43 @@ public:
 
   // functions written for CW:
   
+  /* Not used
   // vector of every grid value from a given list of positions
   // default all positions
   vector<int> getFullGridValues();
   vector<int> getFullGridValues(vector<int*> positions);
-  
-  // return system magnetisation
-  double getMagnetisation();
+  */
 
+  // ints to int pos[2]
   int* toPos(int x, int y){
     tmpPos[0] = x; tmpPos[1]=y;
     return tmpPos;
   };
+
+  // sim num diagnostics
+  void printSimInfo(){
+    cout << "numSims = " << numSims << ", numSweeps = " << numSweeps << endl;
+  };
+
+  // return system magnetisation
+  double getMagnetisation();
+
+  //all energy values dimensionless
+  //sum over nearest neighbours at pos
+  int getPosEnergy(int pos[]);
+
+  //energy of whole system (/N i.e per spin)
+  //double counts over nearest neighbours
+  double getEnergy();
+
+  // manage data recording
+  // record s sims for n sweeps past n0 with interval nInt
+  void setRecording(int sims, int n0, int n, int nInt);
+  
+  void setRecording(bool r){isRecording = r;};
+  
+  void updateSimRecording();
+
+  void endRecording();
 };
 

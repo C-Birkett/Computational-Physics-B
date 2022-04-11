@@ -32,12 +32,29 @@ IsingSystem::IsingSystem(Window *set_win) {
 		grid[i] = new int[gridSize];
 	}
 
+  numSims = 0;  //1 indexed (++ by Reset())
+  numSweeps = 0;  // 1 indexed
+                
+  // by default no maximum num of sweeps or sims (i.e keep going)
+  maxSweeps = 0;
+  maxSims = 0;
+
+  isRecording = false;
+
 	// this sets the temperatre and initialises the spins grid
 	Reset();
 }
 
 void IsingSystem::Reset() {
+  if(isRecording){
+    updateSimRecording();
+    if(++numSims == maxSims){
+      pauseRunning();
+      endRecording();
+    }
+  }
 
+  // original reset stuff
 	double initialTemp = 4.0;
 
 	setTemperature(initialTemp);
@@ -190,10 +207,19 @@ void IsingSystem::setPosNeighbour(int setpos[], int pos[], int val) {
 // this is the update function which at the moment just does one mc sweep
 void IsingSystem::Update() {
 	MCsweep();
+  if(++numSweeps <= maxSweeps){
+    if(isRecording && (numSweeps-initialSweeps) >= 0 && numSweeps%sweepInterval == 0){
+      if(numSims==0) sweepData->push_back(static_cast<double>(numSweeps));
+      magnetisationData->push_back(getMagnetisation());
+      energyData->push_back(getEnergy());
+    }
+  }
+  else Reset();
 }
 
 // code written for cw:
 
+/* Not used
 // vector of every grid value from a given list of positions
 // default all positions
 vector<int> IsingSystem::getFullGridValues(){
@@ -208,15 +234,90 @@ vector<int> IsingSystem::getFullGridValues(vector<int*> positions){
   }
   return vals;
 }
-
+*/
 
 double IsingSystem::getMagnetisation(){
   int sum = 0;
   for(int i=0; i < gridSize; i++){
     for(int j=0; j < gridSize; j++){
       sum += readGrid(toPos(i,j));
-      cout << "pos = " << tmpPos[0] << tmpPos[1] <<endl;
+      //cout << "pos = " << tmpPos[0] << tmpPos[1] <<endl;
     }
   }
   return static_cast<double>(sum) / static_cast<double>(gridSize*gridSize);
+}
+
+//dimensionless energy at pos
+int IsingSystem::getPosEnergy(int pos[]){
+  int E = 0;
+  int posE = readGrid(pos);
+  int neighbour[2];
+  //sum over 4 nearest neighbors
+  for(int i=0; i<4; i++){
+    setPosNeighbour(neighbour, pos, i);
+    E += posE*readGrid(neighbour);
+  }
+  return -E;
+}
+
+double IsingSystem::getEnergy(){
+  double E = 0.0;
+  for(int i=0; i<gridSize; i++){
+    for(int j=0; j<gridSize; j++){
+      E += static_cast<double>(getPosEnergy(toPos(i,j)));
+    }
+  }
+  return E/(gridSize*gridSize);
+}
+
+// manage data recording
+// record s sims for n sweeps past n0 with interval nInt
+void IsingSystem::setRecording(int sims, int n0, int n, int nInt){
+  isRecording = true;
+  maxSims = sims;
+  initialSweeps = n0;
+  maxSweeps = n;
+  sweepInterval = nInt;
+
+  sweepData = new vector<double>;
+  magnetisationData = new vector<double>;
+  energyData = new vector<double>;
+
+  // preallocate space so not resizing
+  int tmp = ((n-n0)/nInt) +1;
+  sweepData->reserve(tmp);
+  magnetisationData->reserve(tmp);
+  energyData->reserve(tmp);
+
+  // store data after each sim
+  dataSet = new vector<vector<double>>;
+}
+
+void IsingSystem::updateSimRecording(){
+  if(numSims==0) dataSet->push_back(*sweepData);
+  dataSet->push_back(*magnetisationData);
+  dataSet->push_back(*energyData);
+
+  delete magnetisationData;
+  delete energyData;
+
+  magnetisationData = new vector<double>;
+  energyData = new vector<double>;
+
+  numSweeps = 0;
+}
+
+void IsingSystem::endRecording(){
+  // write to CSV
+  auto csv = new CSVWrite("./data.csv");
+
+  csv->WriteVector(dataSet);
+  csv->CSVClose();
+
+  delete sweepData;
+  delete dataSet;
+  delete csv;
+
+  isRecording = false;
+  numSims = 0;
 }
