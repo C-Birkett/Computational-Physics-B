@@ -2,6 +2,10 @@
 //  IsingSystem.cpp
 //
 
+// TODO:
+// 
+// set up recording to vary temperature
+
 #include "IsingSystem.h"
 
 // colors
