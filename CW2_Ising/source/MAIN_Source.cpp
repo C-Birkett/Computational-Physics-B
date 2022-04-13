@@ -1,5 +1,7 @@
 // MAIN_IsingModel.cpp
 //
+// TODO:
+//
 
 #include <GL/glut.h>
 #include <iostream>
@@ -63,7 +65,8 @@ void drawFuncs::introMessage() {
 	cout << "  g to go; p to pause" << endl;
 	cout << "  h for hotter; c for colder" << endl;
 	cout << "  u for update once" << endl;
-	cout << "  m to print magnetisation" << endl;
+	cout << "  m to print system magnetisation" << endl;
+	cout << "  m to print system energy per spin" << endl;
 	cout << "  t to set up data recording" << endl;
 }
 
@@ -131,8 +134,63 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     break;
   case 't':
     cout << "Set up recording parameters:" << endl;
+    cout << "These are the preset sim parameters used in the data analysis of the coursework," << endl;
+    cout << "select one of the following:" << endl;
+    cout << "0 -> input custom parameters" << endl;
+    cout << "1 -> ex 1: convergence from initial condition to equilibrium" << endl;
+    cout << "2" << endl;
+    cout << "3" << endl;
+    cout << "4" << endl;
 
-    cout << "input number of sweeps to perform: ";
+    int presetNum;
+    cin >> presetNum;
+
+    // should be switch here, but want to use break; to escape handleKeypress switch
+    // only have a few so should be ok to use else if
+    // #1 -> look at convergence of magnetisation and energy from initial state
+    if(presetNum==1){
+      int nSims = 900;
+      int nISweeps = 0; //looking at convergence from initial conditions
+      int nSweeps = 50;
+      int intSweeps = 1;
+
+      double t = 1;
+      double tInt = 0.5;
+      double tSimInt = 100; //100 sims at each t from 1 to 5
+      sys->setRecording(nSims, nISweeps, nSweeps, intSweeps, t, tInt, tSimInt);
+      cout << "press g (go) in the window to start" << endl;
+      sys->setFast();
+      break;
+    }
+    // #2 -> look more closely at T in range [2.5, 3]
+    else if(presetNum==2){
+      int nSims = 600;
+      int nISweeps = 0; //looking at convergence from initial conditions
+      int nSweeps = 100;
+      int intSweeps = 1;
+
+      double t = 2.5;
+      double tInt = 0.1;
+      double tSimInt = 100; //100 sims at each t from 1 to 5
+      sys->setRecording(nSims, nISweeps, nSweeps, intSweeps, t, tInt, tSimInt);
+      cout << "press g (go) in the window to start" << endl;
+      sys->setFast();
+      break;
+    }
+    // #3 -> 
+    else if(presetNum==3){
+    }
+    // #4 -> 
+    else if(presetNum==4){
+    }
+    // #5 -> 
+    else if(presetNum==5){
+    }
+    // #6 -> 
+    else if(presetNum==6){
+    }
+
+    cout << "input number of sweeps to perform:";
     int nSweeps;
     cin >> nSweeps;
     cout << "number of sweeps set as: "<< nSweeps << endl;
@@ -152,7 +210,22 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     cin >> nSims;
     cout << "number of sims set as: "<< nSims << endl;
 
-    sys->setRecording(nSims, nISweeps, nSweeps, intSweeps);
+    cout << "input initial temperature:";
+    int t;
+    cin >> t;
+    cout << "initial temperature set as: "<< t << endl;
+
+    cout << "input temperature interval:";
+    int tInt;
+    cin >> tInt;
+    cout << "temperature interval set as: "<< tInt << endl;
+
+    cout << "input number of sims to do at each temperature:";
+    int tSimInt;
+    cin >> tSimInt;
+    cout << "temperature sim interval set as: "<< tSimInt << endl;
+
+    sys->setRecording(nSims, nISweeps, nSweeps, intSweeps, t, tInt, tSimInt);
 
     cout << "press g (go) in the window to start" << endl;
 

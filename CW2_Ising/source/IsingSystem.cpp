@@ -4,7 +4,12 @@
 
 // TODO:
 // 
-// set up recording to vary temperature
+//
+
+// NOTE:
+// T0 = T * kb / J
+// inverseTemperatureBeta = 1/T0
+// setTemperature(T0) sets beta
 
 #include "IsingSystem.h"
 
@@ -45,11 +50,19 @@ IsingSystem::IsingSystem(Window *set_win) {
 
   isRecording = false;
 
-	// this sets the temperatre and initialises the spins grid
+	temp = 4.0;
+  tempInterval = 0.0;
+  tempSimInterval = 100;
+
+	setTemperature(temp);
+
+	// this sets the temperature and initialises the spins grid
 	Reset();
 }
 
 void IsingSystem::Reset() {
+
+  // manage parameters between simulations
   if(isRecording){
     updateSimRecording();
     if(++numSims == maxSims){
@@ -58,10 +71,18 @@ void IsingSystem::Reset() {
     }
   }
 
-  // original reset stuff
-	double initialTemp = 4.0;
+  // set new seed
+  setRandomSeed();
 
-	setTemperature(initialTemp);
+  // original reset stuff below
+
+  // moved initial set temp to constructor
+  // change system temperature if needed
+  if(numSims % tempSimInterval == 0){
+  temp += tempInterval;
+  setTemperature(temp);
+  cout << "Simulation number " << numSims << ", temperature set to " << temp << endl;
+  }
 
 	// set the grid to -1
 	for (int i = 0; i<gridSize; i++) {
@@ -73,7 +94,6 @@ void IsingSystem::Reset() {
 		}
 	}
 }
-
 
 // destructor
 IsingSystem::~IsingSystem() {
@@ -131,7 +151,6 @@ void IsingSystem::DrawSquares() {
 	win->displayString(str, -0.9, 0.94, colours::red);
 
 }
-
 
 // attempt N spin flips, where N is the number of spins
 void IsingSystem::MCsweep() {
@@ -276,12 +295,19 @@ double IsingSystem::getEnergy(){
 
 // manage data recording
 // record s sims for n sweeps past n0 with interval nInt
-void IsingSystem::setRecording(int sims, int n0, int n, int nInt){
+void IsingSystem::setRecording(int sims, int n0, int n, int nInt, double t, double tInt, int tSimInt){
   isRecording = true;
+
   maxSims = sims;
+
   initialSweeps = n0;
   maxSweeps = n;
   sweepInterval = nInt;
+
+  temp = t;
+  tempInterval = tInt;
+  tempSimInterval = tSimInt;
+  setTemperature(temp);
 
   sweepData = new vector<double>;
   magnetisationData = new vector<double>;
@@ -297,6 +323,7 @@ void IsingSystem::setRecording(int sims, int n0, int n, int nInt){
   dataSet = new vector<vector<double>>;
 }
 
+// manage data between recordings
 void IsingSystem::updateSimRecording(){
   if(numSims==0) dataSet->push_back(*sweepData);
   dataSet->push_back(*magnetisationData);

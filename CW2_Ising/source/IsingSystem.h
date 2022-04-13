@@ -44,6 +44,8 @@ private:
 	// this an output file (in case we need one)
 	ofstream logfile;
 
+  // added for CW:
+
   // vector of every position in grid
   // NOT DOABLE due to pos being of type int[]
   vector<int> positions;
@@ -68,6 +70,11 @@ private:
   // number to perform before Reset() or write data, 1 indexed
   int maxSweeps;
   int maxSims;
+
+  // vary beta over multiple simulations
+  double temp;
+  double tempInterval;
+  int tempSimInterval; // initialTemp += tempInterval every # tempSimInterval sims
 
   // recording data:
   vector<double>* sweepData;
@@ -104,6 +111,7 @@ public:
 	void flipSpin(int pos[]);
 
 	// reset temperature to default value and re-initialise the grid
+  // CW edit -> now handles adjustment of variables in between simulations
 	void Reset();
 
 	// "user interface" for the isActive variable
@@ -122,6 +130,7 @@ public:
 	void setPosNeighbour(int setpos[], int pos[], int val);
 
 	// update the system: makes a Monte Carlo sweep
+  // CW edit: -> now also handles data recording
 	void Update();
 
 	// draws the system as squares
@@ -158,14 +167,21 @@ public:
   //double counts over nearest neighbours
   double getEnergy();
 
-  // manage data recording
+  // we want random results between simulations i.e not psuedorandom deterministic
+  void setRandomSeed() {rgen.setSeed(rgen.trueRand());}
+
+  // manage data recording: setup parameters
   // record s sims for n sweeps past n0 with interval nInt
-  void setRecording(int sims, int n0, int n, int nInt);
+  // vary temperature t between simulations
+  //void setRecording(int sims, int n0, int n, int nInt);
+  void setRecording(int sims, int n0, int n, int nInt, double t, double tInt, int tSimInt);
   
   void setRecording(bool r){isRecording = r;};
   
+  // change parameters between simulations
   void updateSimRecording();
 
+  // finish recording and write data to CSV
   void endRecording();
 };
 
