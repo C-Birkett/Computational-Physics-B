@@ -133,14 +133,18 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
     cout << sys->getEnergy() << endl;
     break;
   case 't':
-    cout << "Set up recording parameters:" << endl;
+    cout << endl << "Set up recording parameters:" << endl;
     cout << "These are the preset sim parameters used in the data analysis of the coursework," << endl;
-    cout << "select one of the following:" << endl;
+    cout << "select one of the following:" << endl << endl;
     cout << "0 -> input custom parameters" << endl;
-    cout << "1 -> ex 1: convergence from initial condition to equilibrium" << endl;
-    cout << "2" << endl;
-    cout << "3" << endl;
-    cout << "4" << endl;
+    cout << "1 -> ex 1: convergence from initial condition to equilibrium T in [1, 5]" << endl;
+    cout << "2 -> ex 1: '' T in [2.5, 3]" << endl;
+    cout << "3 -> ex 1: '' T in [2.5, 2.6]" << endl;
+    cout << "4 -> ex 2: equilibrium values for T in [1, 4] inital sweeps ignored = 200 take avg over 10 vals taken every 50 sweeps" << endl;
+    cout << "5 -> " << endl;
+
+    cout << endl << "selection: ";
+
 
     int presetNum;
     cin >> presetNum;
@@ -177,11 +181,35 @@ void drawFuncs::handleKeypress(unsigned char key, int x, int y) {
       sys->setFast();
       break;
     }
-    // #3 -> 
+    // #3 -> look more closely at T in range [2.5, 2.6]
     else if(presetNum==3){
+      int nSims = 600;
+      int nISweeps = 0; //looking at convergence from initial conditions
+      int nSweeps = 200;
+      int intSweeps = 1;
+
+      double t = 2.5;
+      double tInt = 0.02;
+      double tSimInt = 100; //100 sims at each t from 1 to 5
+      sys->setRecording(nSims, nISweeps, nSweeps, intSweeps, t, tInt, tSimInt);
+      cout << "press g (go) in the window to start" << endl;
+      sys->setFast();
+      break;
     }
     // #4 -> 
     else if(presetNum==4){
+      int nSims = 700;
+      int nISweeps = 200; // ignore first 200
+      int nSweeps = 700;  // measure every 50 past 200 -> 10 measurements
+      int intSweeps = 50; // assumption is that in equilibrium the states are independent after 50 sweeps
+
+      double t = 1;
+      double tInt = 0.5;
+      double tSimInt = 100; //100 sims at each t from 1 to 4
+      sys->setRecording(nSims, nISweeps, nSweeps, intSweeps, t, tInt, tSimInt);
+      cout << "press g (go) in the window to start" << endl;
+      sys->setFast();
+      break;
     }
     // #5 -> 
     else if(presetNum==5){
